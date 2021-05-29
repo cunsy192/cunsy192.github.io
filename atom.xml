@@ -1,0 +1,505 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <title>村山羊的博客</title>
+  
+  <subtitle>追随属于你的星星</subtitle>
+  <link href="/atom.xml" rel="self"/>
+  
+  <link href="https://cunsy192.github.io/"/>
+  <updated>2020-10-23T13:16:34.584Z</updated>
+  <id>https://cunsy192.github.io/</id>
+  
+  <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>使用BP神经网络实现二分类</title>
+    <link href="https://cunsy192.github.io/2020/10/23/%E4%BD%BF%E7%94%A8BP%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E5%AE%9E%E7%8E%B0%E4%BA%8C%E5%88%86%E7%B1%BB/"/>
+    <id>https://cunsy192.github.io/2020/10/23/%E4%BD%BF%E7%94%A8BP%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E5%AE%9E%E7%8E%B0%E4%BA%8C%E5%88%86%E7%B1%BB/</id>
+    <published>2020-10-23T10:18:42.000Z</published>
+    <updated>2020-10-23T13:16:34.584Z</updated>
+    
+    <content type="html"><![CDATA[<p><img src="/images/pasted-70.png" alt="upload successful"></p><pre><code>神经网络类型：BP(back propagation)神经网络隐藏层：1（含神经元：3，偏置项独立，梯度下降关闭）激活函数：sigmoid函数正则化：无迭代次数：1000数据集：内外两包含一定厚度的以10为边界的1/4圆噪点：30个，两边各15个编程语言：Python</code></pre><p>  没想到吧，我又回来了！这两周光准备期中考试了，都没有时间来学习课外知识，但想到不发博客对不起自己的良心，还是拿之前做过的染色分类器水水文章。<br>    <a id="more"></a><br>对了，在文章开始前我想介绍一位朋友，这位不愿透露性别的朋友要我帮忙宣传ta的博客，于是你可以看见如下链接：<br><a href="https://www.cnblogs.com/Desc-End/" target="_blank" rel="noopener">Desc_End的博客</a><br>好了，广告时间结束，进入正题！<br>在本文开始之前，你需要了解：<br>一、线性代数基础<br>二、Python基础（含numpy、matplotlib.pyplot、random库）<br>三、高等数学基础（主要含链式求导法则）<br>四、线性回归基础<br>五、深度学习基础（BP神经网络原理）<br><del>是不是感觉似曾相识</del><br>OK，Here we go!<br>一、线性激活函数与sigmoid函数<br>  上文中用到了y=x这一激活函数，输出成为了拟合的数值点，在这里，我们使用了sigmoid函数，将输出变成了“概率”，当然它不是真正意义上的概率[1]。在程序中，我使用了定义：<br>  <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">sigmoid</span><span class="params">(t)</span>:</span></span><br><span class="line">  x = <span class="number">1.0</span>/(<span class="number">1</span>+np.exp(-t))</span><br><span class="line">  <span class="keyword">return</span> x</span><br></pre></td></tr></table></figure><br>  需要注意的坑是，这里的t为向量，而且exp函数只能调用np库中的exp，使用math库会报错，在附录中，你[可以]下载到程序，我将代码做了一个伪UI界面，你可以愉快调参，输出各种不同的结果。<br>  <del>笔者玩得不亦乐乎，它每次迭代的过程都不同( •̀ ω •́ )y</del><br>二、数据集设定<br>  我采用的是内外圆设定，x0、x1构成横轴与纵轴，y用于标记数据，大概就是这样（？）：</p><p><img src="/images/pasted-71.png" alt="upload successful"></p><pre><code>这里的数据域是离散的点，在效果图（见第一幅图）中，我在正类与负类中均选取了100个点。</code></pre><p>  我同时设置了<br>三、正向传播<br>  和之前一样，我采用了一层神经网络，这里不再赘述，只是将输出的神经元用sigmoid处理，调整阈值为0.5（和逻辑回归很像），单层神经网络节点模型如下：</p><p><img src="/images/pasted-72.png" alt="upload successful">  </p><p>  多个节点就组成了神经网络：</p><p><img src="/images/pasted-73.png" alt="upload successful"> </p><p>  最后得到的是0-1之间的数，大于等于0.5就是正类，小于0.5就是负类。<br>四、反向传播<br>  没啥好说的，之前写过了，这里提醒两点：<br>  1、由于使用了sigmoid函数，导致求导后变成了z(1-z)这种形式（详见吴恩达）；<br>  2、建议关闭对于偏置项的梯度下降，这样能防止过拟合（挂一个过拟合图像）：</p><p><img src="/images/pasted-74.png" alt="upload successful"></p><pre><code>虽然是100%正确率，但是完全没有价值（除了好看）</code></pre><p>五、测试新数据<br>  学习完后我们需要看看效果如何，于是我引入了新数据测试点，在标题界面展示所属点的类型（红点/蓝点），结果还是很精确的（BP神经网络如此强大！）<br>六、结尾<br>  是的，<del>本文就是把很久以前的代码翻出来然后恬不知耻地水了篇博客</del>本文对最简单的BP染色分类器做了实现，不算太好，但起码能看。最后安利一波VsCode，打开速度比pycharm好很多，还有很多非常舒服的功能，感谢泡哥！<br>七、附录<br>  1、参考文献<br>  [1]<a href="https://blog.csdn.net/euzmin/article/details/104538328" target="_blank" rel="noopener">sigmoid输出的是什么</a><br>  2、下载项<br>  [1]<a href="/download/BP_Classfication.py&quot;">BP染色分类器</a></p><p>  下一个模型是什么呢？</p>]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;&lt;img src=&quot;/images/pasted-70.png&quot; alt=&quot;upload successful&quot;&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;神经网络类型：BP(back propagation)神经网络
+隐藏层：1（含神经元：3，偏置项独立，梯度下降关闭）
+激活函数：sigmoid函数
+正则化：无
+迭代次数：1000
+数据集：内外两包含一定厚度的以10为边界的1/4圆
+噪点：30个，两边各15个
+编程语言：Python
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;  没想到吧，我又回来了！这两周光准备期中考试了，都没有时间来学习课外知识，但想到不发博客对不起自己的良心，还是拿之前做过的染色分类器水水文章。&lt;br&gt;&lt;/p&gt;
+    
+    </summary>
+    
+    
+    
+  </entry>
+  
+  <entry>
+    <title>一个简单的神经网络实例</title>
+    <link href="https://cunsy192.github.io/2020/10/07/%E4%B8%80%E4%B8%AA%E7%AE%80%E5%8D%95%E7%9A%84%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E5%AE%9E%E4%BE%8B/"/>
+    <id>https://cunsy192.github.io/2020/10/07/%E4%B8%80%E4%B8%AA%E7%AE%80%E5%8D%95%E7%9A%84%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E5%AE%9E%E4%BE%8B/</id>
+    <published>2020-10-07T04:13:00.000Z</published>
+    <updated>2020-10-23T12:42:31.114Z</updated>
+    
+    <content type="html"><![CDATA[<p><img src="/images/pasted-67.png" alt="upload successful"></p><pre><code>神经网络类型：BP(back propagation)神经网络隐藏层：1（含神经元：3，偏置项独立）激活函数：y=x正则化：无迭代次数：300拟合函数：y=sin(x/3)数据集：本地随机生成编程语言：Python</code></pre><p>那天舍友找到我，问我搞不搞BP神经网络，于是我就自闭了两天。现在，一个清晰的图像呈现在我眼前，它是拟合众多实例中的一个。<br><a id="more"></a><br>注意：本文不对BP的原理做出详尽的解释，具体推导过程请参阅[1]，这里只对模型进行编程化表示，想要代码的直接翻到文末，因为过程主要是我对机器学习课程的理解，似乎有点冗长，并存在未知的问题，但代码可以运行,有需要的小伙伴可以下载。<br>在本文开始之前，你需要了解：<br>一、线性代数基础<br>二、Python基础（含numpy、matplotlib.pyplot、random库）<br>三、高等数学基础（主要含链式求导法则）<br>四、线性回归基础<br>五、深度学习基础（BP神经网络原理）</p><p>OK，我们开始快乐建模与coding！<br>以下述函数为例：<script type="math/tex">y={x^2}</script><br>一、模型的建立与表示<br>   我选择了最简单的神经网络模型，即一个输入层，一个隐藏层，一个输出层，激活函数[2]选择最简单的y=x，因为我们要拟合函数。如图：</p><p><img src="/images/pasted-68.png" alt="upload successful"></p><p>偏置项与之前的回归模型不同，这里独立出来，之后会提到。<br>二、数据初始化、矩阵化与正向传播<br>   这里采用了连续间隔为1的x离散图，x∈[-10,10]，设</p><script type="math/tex; mode=display">y={x^2+rd}</script><p>   其中rd为-5/3到5/3的随机数，用于制造噪点。<br>   假设数据有n列（这里n为21），矩阵表示$X^0$，有：</p><script type="math/tex; mode=display">   X^0=  \begin{pmatrix}  x_{1} \\\\  x_{2} \\\\  \vdots \\\\  x_{n} \\\\  \end{pmatrix}</script><pre><code>MathJax我打不出来同时带上下标的公式QAQ</code></pre><p>   相同地，$Y$表示为：</p><script type="math/tex; mode=display">   Y=  \begin{pmatrix}  y_{1} \\\\  y_{2} \\\\  \vdots \\\\  y_{n} \\\\  \end{pmatrix}</script><p>   权重阵${θ_1}$为：</p><script type="math/tex; mode=display">   \begin{pmatrix}   θ_1^1 & θ_2^1 & θ_3^1   \end{pmatrix}</script><p>   权重阵${θ_2}$为：</p><script type="math/tex; mode=display">   \begin{pmatrix}   θ_1^2 \\\\   θ_2^2 \\\\   θ_3^2 \\\\   \end{pmatrix}</script><pre><code>公式有点问题，只能用上标表示行，以下标表示列，向量要以该形式表示，没有问题，这里加个猛男嘻嘻~</code></pre><p>   两个偏置项b1，b2，分别用两个列向量表示（初值置为1）：</p><script type="math/tex; mode=display">   \begin{pmatrix}   b_1^1 \\\\   b_2^1 \\\\   \vdots \\\\   b_n^1 \\\\   \end{pmatrix}   \begin{pmatrix}   b_1^2 \\\\   b_2^2 \\\\   \vdots \\\\   b_n^2 \\\\   \end{pmatrix}</script><p>   值得注意的是，该处xθ为矩阵相乘，最后是一个3×3的矩阵：</p><script type="math/tex; mode=display">   \begin{equation}   \begin{split}   xθ_1+b1= \\\\   \end{split}   \end{equation}</script><script type="math/tex; mode=display">   \begin{pmatrix}   x_{1}^1 & x_{1}^2 & x_{1}^3 \\\\   x_{2}^1 & x_{2}^2 & x_{2}^3 \\\\   \vdots & \vdots & \vdots \\\\   x_{n}^1 & x_{n}^2 & x_{n}^3 \\\\   \end{pmatrix}</script><p>   这个矩阵很有意思，他的每一个列向量表示一个神经元，我们的所有节点均为这样的列向量，如果你按我的思路推导，就能得出以上结论。<br>   继续输出（正向传播），得到output层：</p><script type="math/tex; mode=display">   \begin{equation}   \begin{split}   xθ_2+b2=   \end{split}   \end{equation}</script><script type="math/tex; mode=display">   \begin{pmatrix}   y_1^{'} \\\\   y_2^{'} \\\\   \vdots \\\\   y_n^{'} \\\\   \end{pmatrix}</script><p>   至此，正向传播构建完毕<del>我快给公式搞疯了</del><br>三、误差与梯度<br>   根据吴恩达课程所教内容，每层误差为：</p><script type="math/tex; mode=display">   \begin{equation}   \begin{split}   δ^{2}=output-Y \qquad (1)   \end{split}   \end{equation}</script><script type="math/tex; mode=display">   \begin{equation}   \begin{split}   δ^{1}=δ^{2}θ^T \qquad (2)   \end{split}   \end{equation}</script><pre><code>    真的，这公式有点丑，但我才刚刚上手MathJax，不用在意~</code></pre><p>   这里的（2）与吴恩达不同，因为我们使用了y=x作激活函数，导数就为1，而吴恩达的为sigmoid激活函数，所以有所不同。<br>   好了，到求梯度环节！<br>   根据链式求导法则[3]，有</p><script type="math/tex; mode=display">   Δ^{(2)}:=\frac{1}{m}(Δ^{(2)}+{layer1}^Tδ^{2}) \\\\   Δ^{(1)}:=Δ^{(1)}+x^Tδ^{1}</script><p>   $Δ^{(1)}$与$Δ^{(2)}$即为每层连接矩阵的梯度向量，这里的$Δ^{(k)},k=1,2$刚开始时置为0，我在编程中使用了笨方法，即用两行代码表示两个梯度项，没有如吴恩达他老人家展开成一列向量，我这么做的坏处就是不易更新与维护，whatever，我会继续更新算法的。<br>四、梯度下降与循环<br>   在这里，我使用了最传统的梯度下降法，没有使用高级算法（造业余轮子一百年），有：</p><script type="math/tex; mode=display">   θ_1:=θ_1-aΔ^{(1)} \\\\   θ_2:=θ_2-aΔ^{(2)}</script><p>   其中a为学习率，取一&lt;1的数，我一般取0.1、0.3、0.003等等，这是为了防止梯度爆炸[4]，不瞒你说，我在实际运行中出现过很多次梯度爆炸。<br>   大功告成！但是等等，我们似乎漏掉了偏置项！根据链式求导，我们<del>轻松地</del>求出了偏置项的梯度下降公式为：</p><script type="math/tex; mode=display">   b1=b1-aδ^{1}   b2=b2-aδ^{1}</script><p>   切记！这里的梯度下降是直接对误差δ求的，不是对Δ！<br>   之后，我们做一个循环，这与回归类型一致，不再赘述。<br>五、运行结果<br>   先上一张运行效果图！（btw，我加入了误差和多图表示，使得程序与上述有些不同，但你应该能分辨吧hh）</p><p><img src="/images/pasted-69.png" alt="upload successful">   </p><pre><code>左边的图为散点拟合图，右边为随迭代次数升高的误差，可以看到误差在降低。</code></pre><p>   有些拟合函数的误差并没有这么完美，它们是先降低后升高再降低的，就像这个：</p><p>   <a href="/download/一般三次函数.png&quot;">点击查看一般三次函数图</a></p><p>   除此之外，还有许多有趣的图片，你可以点击下方链接来查看它们：</p><p>   <a href="/download/sigmoid_function.png&quot;">点击查看拟合sigmoid图</a><br>   <a href="/download/简单正弦函数.png&quot;">点击查看拟合简单正弦函数图</a><br>   <a href="/download/过原点反比例函数.png&quot;">点击查看拟合过原点反比例函数图</a><br>   <a href="/download/一般一次函数.png&quot;">点击查看拟合一般一次函数图</a></p><p>   你可以在下载项的源代码中关掉动画项，如果你的计算机算力不强的话（具体请见源代码注解）。<br>   好了，今天就到这吧，我们分类问题见！<br>六、参考资料与下载项<br>  1、参考资料</p><p>  [1]周志华.机器学习[M].清华大学出版社:周志华.2016-1-1<br>  [2]<a href="https://wenku.baidu.com/view/2a88edc8e53a580216fcfeda.html" target="_blank" rel="noopener">激活函数</a><br>  [3]<a href="https://baike.baidu.com/item/%E9%93%BE%E5%BC%8F%E6%B3%95%E5%88%99/3314017?fr=aladdin" target="_blank" rel="noopener">链式求导法则</a><br>  [4]<a href="https://blog.csdn.net/junjun150013652/article/details/81274958" target="_blank" rel="noopener">梯度消失与梯度爆炸</a></p><p>  2、下载项</p><p>  <a href="/download/BP_fitting.py&quot;">BP神经网络拟合程序</a></p>]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;&lt;img src=&quot;/images/pasted-67.png&quot; alt=&quot;upload successful&quot;&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;神经网络类型：BP(back propagation)神经网络
+隐藏层：1（含神经元：3，偏置项独立）
+激活函数：y=x
+正则化：无
+迭代次数：300
+拟合函数：y=sin(x/3)
+数据集：本地随机生成
+编程语言：Python
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;那天舍友找到我，问我搞不搞BP神经网络，于是我就自闭了两天。现在，一个清晰的图像呈现在我眼前，它是拟合众多实例中的一个。&lt;br&gt;&lt;/p&gt;
+    
+    </summary>
+    
+    
+      <category term="我与AI" scheme="https://cunsy192.github.io/categories/%E6%88%91%E4%B8%8EAI/"/>
+    
+    
+      <category term="机器学习" scheme="https://cunsy192.github.io/tags/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/"/>
+    
+      <category term="深度学习" scheme="https://cunsy192.github.io/tags/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>仓鼠与诗篇</title>
+    <link href="https://cunsy192.github.io/2020/10/02/%E4%BB%93%E9%BC%A0%E4%B8%8E%E8%AF%97%E7%AF%87/"/>
+    <id>https://cunsy192.github.io/2020/10/02/%E4%BB%93%E9%BC%A0%E4%B8%8E%E8%AF%97%E7%AF%87/</id>
+    <published>2020-10-02T12:30:18.000Z</published>
+    <updated>2020-10-07T04:16:27.106Z</updated>
+    
+    <content type="html"><![CDATA[<p>因为疫情，闲着也是闲着，于是我养起了仓鼠。<br><a id="more"></a><br>   刚开始只有四只，两雌两雄，毛色也是两黄两灰，后来逐渐生了几窝，加起来估计十五六只。现在呢，逐渐送了人，只剩下两只了——颇有些红楼梦后四十回清冷的感觉。<br>   这些小东西对待食物总是来者不拒，当然如果你同时给它们很多好吃的，它们也会挑食。拿手捧着瓜子、坚果或者其它东西，直立起来，往嘴巴送。塞不下了怎么办？放颊囊中！于是当我恐吓它们，让它们处于陌生环境中时，总会看到成把成把没吞下的粮食从嘴里吐出，仿佛想用食物平息我的愤怒。<br>   睡觉方面它们十分有一手。刚开始时它们是闭着眼睛卷成一团，时间久了逐渐有了新花样：有的喜欢浴沙盆，用脸蹭着安然入睡；有的就喜欢待在跑轮上，你把它赶下来它还和你急——当然仓鼠不会当众骂娘，而是发出一种尖锐的“滋滋”声。最奇特的莫过于一只黄色雄性，它总会在酷热的夏天找到一处凉爽的地方，然后身体直立，重心向后，仰面躺下，露出白色多肉的肚子，你甚至可以看见它睡觉时俩贴在肚子上的小爪子一挠一挠的，估计是梦见跑轮了，前段时间我妈发现它睁着眼睛一动不动，细查时发现是打斗死了，毛被抓破了一片，当真是鼠生难料。<br>   生育方面自不用讲，正如我前文所说，两只雌仓鼠一共生了三窝。仓鼠育儿比较奇特，它们会毫不留情地吃掉弱小的幼崽，而细心照顾强大有活力的。第一只幼崽就惨遭它母亲的毒手，孤零零的只剩个头。为此我义愤填膺，把母仓鼠放在手里倒腾，但最后想想还是算了，我们连物种都不同，又如何用人类的行为约束它们呢？还好，这只仓鼠后来又生了两只，照顾的不错，我临去学校时，它们已经学会如何用跑轮了。护子也是真的心切，你只要靠近它的育儿窝，它就直冲你嚷嚷，有种不和你拼个你死我活不罢休的感觉。所以呢，当我想看它的育儿情况时，总是用一只手吸引它到其它地方，另一只手快速打开屋子，等它反应过来时，只好呆呆地看着我，耳朵也垂下来了，大大的眼睛里满是悲伤，绝望，痛苦，但仍义无反顾地扑过来，准备与我这个人类的叛徒做殊死搏斗，我也识趣地抽回手，看着它在笼子的边缘无助地打滑与嘶吼，堂吉诃德大战风车估计和这差不多吧。<br>   文中所述打斗事件并不在少数，但是打死还是头一回，我严重怀疑是那只吃掉幼崽的母鼠为之，毕竟它平时凶恶异常，有时见了我都露出獠牙，大声叫唤，逼得我收拾它一顿才安静下来，活脱脱一副悍妇形象。说回打斗，一般是两方对某个东西的争夺导致的，这个东西可以是食物，跑轮，也可以是领地。以食物为例，一般是一方有了好吃的在那里啃食，另一方慢慢接近，准备用手去够，怎奈吃食的不让，背过身去，几次寻食无果后，夺食的就开始咬护食的，护食的立刻反击，几个奔跑撕咬后，一方被另一方压在身下，肚子朝天，发出无奈的“嘶嘶”声，另一方则骄傲地抬起头，仿佛凯旋的将军。你说食物呢，哦，仓鼠的记忆很短，这时食物大抵已经跑到刨花下了，所以我每次清理，总能在笼子底下找到各种食物残渣，还有一地鼠毛。<br>   记忆短使得它们不用一辈子感受悲欢，只需在某一段时间内专注于某一段事物，它可以是事物，水源，也可以是交配权与育儿，让我莫名其妙地想到了梯度下降。母鼠不让我接近它的幼崽，即使我调戏它多次也还是如此；用食物拐骗它们到手上，简直是次次得手；每次打架时输家总会找机会进入跑轮，觉得跑起来了别人就追不上自己，当然跑轮客观上也确实起了阻挡对手的作用。<br>   鼠生的沉浮大抵如此，在它们有限的脑容量作用下，有太多不能理解也不想理解之物。<br>   但是细想一下，人的一生似乎也只是高级的鼠类，我们四处学习知识，积攒财富，像仓鼠屯粮，只为了更好地活着，一旦吃不到嘴里，就一股脑塞在颊囊，发生了事情，又开始企图用钱和知识解决。而哪天不小心触及到了其他人的“领地”，身负重伤，奄奄一息，又哪是人脑可以预料到的呢？<br>   这样才发现，人还是没有仓鼠活得痛快。我们在争夺资源时，总要象征性地礼让一番，说出几句道德戒律，摆出一副圣人模样，其实暗自藏刀，时刻准备出手，搞到手后还要时刻提防，焦虑失眠，觉得哪里都有人想害自己；哪像仓鼠，抢就随时去抢，坦坦荡荡，弄到后就直接睡觉，管他明天太阳是否照常升起。<br>   有一位仓鼠吟游诗人，恳求我写下这篇文章，当作仓鼠与诗篇的故事。<br>   这小家伙。<br>   于是我提笔而作，就有了这篇博客。<br>   予仓鼠的赞美诗。</p>]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;因为疫情，闲着也是闲着，于是我养起了仓鼠。&lt;br&gt;&lt;/p&gt;
+    
+    </summary>
+    
+    
+    
+  </entry>
+  
+  <entry>
+    <title>公式测试</title>
+    <link href="https://cunsy192.github.io/2020/09/30/%E5%85%AC%E5%BC%8F%E6%B5%8B%E8%AF%95/"/>
+    <id>https://cunsy192.github.io/2020/09/30/%E5%85%AC%E5%BC%8F%E6%B5%8B%E8%AF%95/</id>
+    <published>2020-09-30T03:53:52.000Z</published>
+    <updated>2020-09-30T03:57:57.958Z</updated>
+    
+    <content type="html"><![CDATA[<script type="math/tex; mode=display">P = \frac{\sum_{i=1}^n (x_i- x)(y_i- y)}{\displaystyle \left[\sum_{i=1}^n (x_i-x)^2\sum_{i=1}^n (y_i-y)^2\right]^{1/2} }</script><p>竟然成功了，惊了个呆</p>]]></content>
+    
+    <summary type="html">
+    
+      
+      
+        &lt;script type=&quot;math/tex; mode=display&quot;&gt;
+P = \frac
+{\sum_{i=1}^n (x_i- x)(y_i- y)}
+{\displaystyle \left[
+\sum_{i=1}^n (x_i-x)^2
+\sum_{i=1}^n (
+      
+    
+    </summary>
+    
+    
+    
+  </entry>
+  
+  <entry>
+    <title>逻辑回归——多分类</title>
+    <link href="https://cunsy192.github.io/2020/09/30/%E9%80%BB%E8%BE%91%E5%9B%9E%E5%BD%92%E2%80%94%E2%80%94%E5%A4%9A%E5%88%86%E7%B1%BB/"/>
+    <id>https://cunsy192.github.io/2020/09/30/%E9%80%BB%E8%BE%91%E5%9B%9E%E5%BD%92%E2%80%94%E2%80%94%E5%A4%9A%E5%88%86%E7%B1%BB/</id>
+    <published>2020-09-29T16:31:34.000Z</published>
+    <updated>2020-09-30T02:44:25.125Z</updated>
+    
+    <content type="html"><![CDATA[<p><img src="/images/pasted-65.png" alt="upload successful"></p><p>现在，你看到了一个多分类的效果图，它是怎么实现的呢？<br><a id="more"></a><br>一、基础准备<br>准备工作在开始本文前，你需要具备逻辑回归二分类应该具备的基础，该模型是建立在二分类的基础上，利用矩阵特性进行拓展得到的多分类模型。<br>二、矩阵改进<br>我在上一篇博客中已经讲述了二分类所需的构造矩阵，在这里，我将对矩阵进行改进。好的，首先是。。额，随机数生成。。这步只是建立一个本地数据库，便于调试，可以略去。<br><del>我再重申一遍，我没在开玩笑，会xlrd库的大佬举个手好吗！</del><br>而后到了重头戏！根据吴恩达机器学习[1]，我们每次将数据分为两类：正类和负类，体现在数据上是标注0和1，一共划分n次，这里取3次（例子啦，不要纠结~）。根据矩阵知识，重构后的矩阵如下：</p><p><img src="/images/pasted-66.png" alt="upload successful"></p><p>可以很明显地看出，多分类其实就是将因变量和权重矩阵扩充了，于是在之后的逻辑回归中只需迭代n次而不是3n次，减少了时间复杂度。我将这种运算模式称为：并行计算。理所当然地，因变量矩阵和权重矩阵构成了并行运算矩阵模块。<br>三、逻辑回归<br>这和之前的二分类问题没有区别，只是在运算sigmoid函数时需要小小改进一下：<br>首先，将误差阵A转变为一个由numpy库生成的空矩阵而取代列表转矩阵，这样我们只需确定空矩阵接受误差向量的维度（即θ列向量的行数，现在是θ矩阵！）<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#某置空矩阵默默从多分类的全世界路过</span></span><br><span class="line">A = np.empty(shape=[<span class="number">0</span>,theta.shape[<span class="number">0</span>]])</span><br></pre></td></tr></table></figure><br>需要注意的是，在误差的梯度下降中，我们需要将A重新置空，并且不能把θ阵和损失阵的减序搞反。<del>康康是哪个笨比进行了上面的操作，然后成功的把阈值降低到了0.3。</del><br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#就是这厮，减号后面的项与前面的项不能搞反，会导致阈值变化</span></span><br><span class="line">theta = theta - (<span class="number">1</span>/m) * alpha * A</span><br></pre></td></tr></table></figure><br>四、输出与绘图<br>枯燥无味的输出时间！仍然是函数泛化，只是我们需要一个迭代器将三条直线一次输出，我采用的是x轴不变，y轴循环更新的方法，其实之前是想用列表添加三个y域的，但是太麻烦<del>主要是根本不会列表添加列表与取值，甚至我打一个函数还要考虑半天它的输出（快哭了）</del>，采用此方法不会保留列表值，每次输出后自动损失y的数据。大功告成！<br>五、不足与改进措施<br>首先非常明显，该程序是针对本地数据集的，当然你可以调整本地数据集的范围，但仍然使得这个程序非常菜鸡。然后，你可以轻松地想到，它的学习率需要手动调整（调参侠！），迭代次数也不能保证，当然这是可以用损失函数优化的，这里不展示了。最后，它只能线性拟合标记的数据集，使得程序的作用范围远远达不到要求，这要求我们能够用更牛逼的模型计算问题，然后让大家交口称赞。<br>六、下载项<br><a href="/download/Multiple_Classification.py&quot;">多分类主程序</a><br><a href="/download/多分类.png&quot;">效果图</a><br>七、参考资料<br>[1]<a href="https://www.bilibili.com/video/BV164411b7dx?from=search&amp;seid=14471657955032075192" target="_blank" rel="noopener">吴恩达机器学习（B站）</a></p>]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;&lt;img src=&quot;/images/pasted-65.png&quot; alt=&quot;upload successful&quot;&gt;&lt;/p&gt;
+&lt;p&gt;现在，你看到了一个多分类的效果图，它是怎么实现的呢？&lt;br&gt;&lt;/p&gt;
+    
+    </summary>
+    
+    
+    
+  </entry>
+  
+  <entry>
+    <title>一种简单的二分类模型</title>
+    <link href="https://cunsy192.github.io/2020/09/29/%E4%B8%80%E7%A7%8D%E7%AE%80%E5%8D%95%E7%9A%84%E4%BA%8C%E5%88%86%E7%B1%BB%E6%A8%A1%E5%9E%8B/"/>
+    <id>https://cunsy192.github.io/2020/09/29/%E4%B8%80%E7%A7%8D%E7%AE%80%E5%8D%95%E7%9A%84%E4%BA%8C%E5%88%86%E7%B1%BB%E6%A8%A1%E5%9E%8B/</id>
+    <published>2020-09-28T16:45:00.000Z</published>
+    <updated>2020-09-29T16:32:30.413Z</updated>
+    
+    <content type="html"><![CDATA[<p>本文将简单介绍逻辑回归中的常用模型——基于梯度下降优化的逻辑回归二分类模型的编程实践。<br>在本文开始前，你需要具备这些基础：<br>1、线性代数<br>2、导数与偏导数<br>3、概率论与数理统计基础（主要指逻辑斯蒂函数[1]的运用）<br>4、线性回归模型<br>5、逻辑回归模型的概念<br><a id="more"></a><br>好，我们开始吧。<br>一、数据设置与建立矩阵<br>该部分我使用预先设置好的数据集，便于观察效果。<br><del>大佬可以用xlrd库直接导入，由于我刚学Python太菜了没有办法。</del><br>以列表形式给出后，构造矩阵，这里将自变量、因变量与权重分别分为三个矩阵：</p><p><img src="/images/pasted-56.png" alt="upload successful"></p><p>二、构造梯度下降损失单次迭代<br>设自变量矩阵为X，因变量矩阵为Y，权重矩阵为θ，有：</p><p><img src="/images/pasted-61.png" alt="upload successful">       </p><p>（我下次有时间得把渲染公式的插件搞上去，插入图片真是累死人）<br>此步需要注意求相乘构成的列向量的矩阵须用np.exp()函数，用math.exp()会出大问题！</p><p>我们将真实的因变量矩阵表示为Y0，那么误差为：</p><p><img src="/images/pasted-58.png" alt="upload successful"></p><p>这里我们取Y作为前面的减数，去掉绝对值。<br>根据损失函数[2]，求导并经过矩阵变换得到：</p><p><img src="/images/pasted-60.png" alt="upload successful"></p><p>此步我们在迭代中设置一个空矩阵A用于储存迭代的误差与向量星乘之和a通过np.c_[]压入空矩阵A，再将A依次与列向量相乘并求和，最后按以上公式迭代（A须转置）<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#伪代码</span></span><br><span class="line">a = sum((Y-Y0)*xi</span><br></pre></td></tr></table></figure><br>三、构造循环<br>此步同线性回归，设置循环结束条件iterations、步长（学习率）α、计数器cnt、数据个数m，套上第二步中所述梯度下降，完成。<br>四、函数泛化及输出<br>此步推导该公式使得三维决策平面降到二维决策边际：</p><p><img src="/images/pasted-62.png" alt="upload successful"></p><p>设置x1在数据的最小值与最大值之间（此处取0.1间距），输出。<br>五、效果展示</p><p><img src="/images/pasted-63.png" alt="upload successful"></p><pre><code>    迭代次数：10000    学习率：0.1    无初值扰动    可以看见，决策边际将圆点与三角点区分开来</code></pre><p>轨迹图如下：</p><p><img src="/images/pasted-64.png" alt="upload successful"></p><pre><code>    迭代次数：100    学习率：0.1    无初值扰动    可以看见，该决策边际从平行x轴出发，经过多次拟合，最后得到橘黄色直线（斜率最大负值的一条）</code></pre><p><del>老实说，有上下摆动我是没想到的</del></p><p>六、下载项</p><p><a href="/download/Binary_Classification.py&quot;">二分类逻辑回归</a></p><p><a href="/download/逻辑回归-二分类.png&quot;">效果图</a></p><p>七、参考资料<br>[1]<a href="https://baike.baidu.com/item/Logistic%E5%87%BD%E6%95%B0/3520384?fr=aladdin" target="_blank" rel="noopener">逻辑斯蒂函数</a><br>[2]<a href="https://www.zhihu.com/question/47744216?from=profile_question_card" target="_blank" rel="noopener">损失函数</a></p>]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;本文将简单介绍逻辑回归中的常用模型——基于梯度下降优化的逻辑回归二分类模型的编程实践。&lt;br&gt;在本文开始前，你需要具备这些基础：&lt;br&gt;1、线性代数&lt;br&gt;2、导数与偏导数&lt;br&gt;3、概率论与数理统计基础（主要指逻辑斯蒂函数[1]的运用）&lt;br&gt;4、线性回归模型&lt;br&gt;5、逻辑回归模型的概念&lt;br&gt;&lt;/p&gt;
+    
+    </summary>
+    
+    
+      <category term="我与AI" scheme="https://cunsy192.github.io/categories/%E6%88%91%E4%B8%8EAI/"/>
+    
+    
+      <category term="机器学习" scheme="https://cunsy192.github.io/tags/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/"/>
+    
+      <category term="Python" scheme="https://cunsy192.github.io/tags/Python/"/>
+    
+      <category term="矩阵" scheme="https://cunsy192.github.io/tags/%E7%9F%A9%E9%98%B5/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>由Python重构的线性回归算法</title>
+    <link href="https://cunsy192.github.io/2020/09/27/%E7%94%B1Python%E9%87%8D%E6%9E%84%E7%9A%84%E7%BA%BF%E6%80%A7%E5%9B%9E%E5%BD%92%E7%AE%97%E6%B3%95/"/>
+    <id>https://cunsy192.github.io/2020/09/27/%E7%94%B1Python%E9%87%8D%E6%9E%84%E7%9A%84%E7%BA%BF%E6%80%A7%E5%9B%9E%E5%BD%92%E7%AE%97%E6%B3%95/</id>
+    <published>2020-09-26T18:12:00.000Z</published>
+    <updated>2020-09-29T16:32:44.434Z</updated>
+    
+    <content type="html"><![CDATA[<p>本文将简要介绍将matlab中的线性回归算法迁移至Python中，即重构。因为今后的工作将越来越多地借助Python与其十分awesome的库，所以使用Python编程显得尤为重要。<br>本文将包括如下几个部分：<br>1、预备知识<br>2、线性回归算法<br>3、代码实现<br>4、情绪化的个人表达（可以略去）<br>5、参考文献及下载资料<br><a id="more"></a><br>1、预备知识<br>在进入线性回归的美妙时光之前，你需要掌握以下知识：<br>    Ⅰ.Python基本语法及numpy、matplotlib.pyplot、xlrd库。<br>    Ⅱ.线性代数基础<br>    Ⅲ.高等数学（主要是微分与导数）基础<br>    Ⅳ.熬夜精神与可能不充足但没有办法只能挤出来的时间<br>    Ⅴ.学长的鼓舞（这条选修）<br>2、线性回归算法<br>在该部分，我们将回顾主要的线性回归运算，但由于之前的博文已经写过，故略去。<br>3、代码实现<br>由于大部分与matlab中的程序相同，故主要选择不同之处与没有提及的地方讲解，关于之前的回归算法我在博文中有较为详细的说明，欢迎阅读。<br>    Ⅰ.导入数据<br>    导入数据需要用到xlrd库[1]，本文中不赘述（悄悄说句，matlab导入数据比Python好像更方便耶）<br>    Ⅱ.矩阵化<br>    由于matlab导入数据时可以选择矩阵，而Python莫得此功能，故我们需要苦逼地在本该是美好夜晚的时候让输入数据矩阵化（如果不这么做将导致后续处理数据时按列表处理，会产生求矩阵秩与乘法的问题，注意注意）。代码如下<br>    <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#矩阵化初始数据，须提前导入numpy库（这有时可用np.array代替，具体我没找到原因，留作思考题）</span></span><br><span class="line">np.matrix(x)</span><br></pre></td></tr></table></figure><br>    Ⅲ.转置矩阵<br>    这在matlab中十分方便，但是在这里，我们需要这个函数。<br>    <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#转置括号里那个可怜弱小又无助的矩阵QAQ</span></span><br><span class="line">np.transpose(x)</span><br></pre></td></tr></table></figure><br>    Ⅳ.求行列值、增扩矩阵、矩阵置零<br>    这几个功能在matlab中很好实现，但Python确实要费点脑子，主要是这几个函数。<br>    <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#进行求矩阵行列值的操作</span></span><br><span class="line">x.shape</span><br><span class="line"><span class="comment">#进行求矩阵行值或列值的操作（n取0为行值，n取1为列值）</span></span><br><span class="line">x.shape[n]</span><br><span class="line"><span class="comment">#生成零矩阵的函数[2]</span></span><br><span class="line">np.zero()</span><br><span class="line"><span class="comment">#矩阵增扩函数，y在左边则左增扩，右边则右增扩</span></span><br><span class="line">x = np.c_[x,y]</span><br></pre></td></tr></table></figure><br>    Ⅵ.矩阵运算<br>    还是matlab方便，但是我选择了Python，就要负责到底！加法和矩阵乘法和matlab类似，使用x*y或np.dot(x,y)函数，但我实在不明白为啥点乘就表示不出来，后来发现是要用这个函数[3]<br>    <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">np.multiply(a1, x1[:,i])</span><br></pre></td></tr></table></figure><br>    Ⅶ.作图<br>    你终于来到了这一步，但是摆在你眼前的是作图，没有关系，我们plt库可以当此重任！眼下的这几个函数与matlab中的这几个函数是等价的。<br>    <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#等价于scatter(x,y)</span></span><br><span class="line">plt.scatter(x,y)</span><br><span class="line"><span class="comment">#等价于plot(x,y)</span></span><br><span class="line">plt.plot(x,y)</span><br><span class="line"><span class="comment">#等价于hold on加上display</span></span><br><span class="line">plt.show()</span><br></pre></td></tr></table></figure><br>    Ⅷ.其他<br>    这可太棒了，我们解决了所有问题，但是等等，有一个注意点需要我们考虑。<br>    这个注意点在这里比较坑，我调了半天，从头开始才调出来，那就是减肥时，如果有两个列向量（列数一致），一个为矩阵，另一个为列表，则相减将得到意想不到的结果[4]，这就是之前所说的按列表处理的危害性。对了，来看看Python作的图！</p><p><img src="/images/pasted-52.png" alt="upload successful"></p><pre><code>    散点图（初始数据集）</code></pre><p><img src="/images/pasted-53.png" alt="upload successful"></p><pre><code>    迭代100次的收敛图像</code></pre><p><img src="/images/pasted-54.png" alt="upload successful"></p><pre><code>    迭代轨迹图（从下往上，每条线代表每一次迭代产生的回归直线）</code></pre><p>4、情绪化的个人表达<br>其实像做这篇博文很久了，但因为懒和各种事情拖到现在，重构也是我花了3小时学了Python得出的结果（其实不能说学了，因为很多东西是现查的，而且有些东西需要摸索，网络上没有）。今天的重构是新的开始，之后的各类模型（除了数学建模）我都会使用Python写。人生苦短，我用Python！我今晚想起学长说的要猛学的话，决定要重新开始，不能再颓废了，于是我决定今晚一定要把重构代码搞出来，而且我做到了！有志者，事竟成！我决定在一周内发布逻辑回归的博客！<br>5、参考资料及下载文件<br>    ①参考资料<br>    [1]<a href="https://zhuanlan.zhihu.com/p/92678052" target="_blank" rel="noopener">https://zhuanlan.zhihu.com/p/92678052</a><br>    [2]<a href="https://blog.csdn.net/cpc784221489/article/details/82885590" target="_blank" rel="noopener">https://blog.csdn.net/cpc784221489/article/details/82885590</a><br>    [3]<a href="https://blog.csdn.net/Cherry_Blossom_/article/details/79259804?utm_medium=distribute.pc_relevant.none-task-blog-BlogCommendFromMachineLearnPai2-1.channel_param&amp;depth_1-utm_source=distribute.pc_relevant.none-task-blog-BlogCommendFromMachineLearnPai2-1.channel_param" target="_blank" rel="noopener">https://blog.csdn.net/Cherry_Blossom_/article/details/79259804?utm_medium=distribute.pc_relevant.none-task-blog-BlogCommendFromMachineLearnPai2-1.channel_param&amp;depth_1-utm_source=distribute.pc_relevant.none-task-blog-BlogCommendFromMachineLearnPai2-1.channel_param</a><br>    [4]<a href="https://blog.csdn.net/dake13/article/details/80917932" target="_blank" rel="noopener">https://blog.csdn.net/dake13/article/details/80917932</a><br>    ②下载资料<br>    <a href="/download/LR.py&quot;">基于Python实现的线性回归</a><br>    <a href="/download/test.xlsx&quot;">Kaggle数据集（二元）</a></p>]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;本文将简要介绍将matlab中的线性回归算法迁移至Python中，即重构。因为今后的工作将越来越多地借助Python与其十分awesome的库，所以使用Python编程显得尤为重要。&lt;br&gt;本文将包括如下几个部分：&lt;br&gt;1、预备知识&lt;br&gt;2、线性回归算法&lt;br&gt;3、代码实现&lt;br&gt;4、情绪化的个人表达（可以略去）&lt;br&gt;5、参考文献及下载资料&lt;br&gt;&lt;/p&gt;
+    
+    </summary>
+    
+    
+      <category term="我与AI" scheme="https://cunsy192.github.io/categories/%E6%88%91%E4%B8%8EAI/"/>
+    
+    
+      <category term="机器学习" scheme="https://cunsy192.github.io/tags/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/"/>
+    
+      <category term="Python" scheme="https://cunsy192.github.io/tags/Python/"/>
+    
+      <category term="矩阵" scheme="https://cunsy192.github.io/tags/%E7%9F%A9%E9%98%B5/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>基于C语言单向循环链表的图书管理系统</title>
+    <link href="https://cunsy192.github.io/2020/09/23/%E5%9F%BA%E4%BA%8EC%E8%AF%AD%E8%A8%80%E5%8D%95%E5%90%91%E5%BE%AA%E7%8E%AF%E9%93%BE%E8%A1%A8%E7%9A%84%E5%9B%BE%E4%B9%A6%E7%AE%A1%E7%90%86%E7%B3%BB%E7%BB%9F/"/>
+    <id>https://cunsy192.github.io/2020/09/23/%E5%9F%BA%E4%BA%8EC%E8%AF%AD%E8%A8%80%E5%8D%95%E5%90%91%E5%BE%AA%E7%8E%AF%E9%93%BE%E8%A1%A8%E7%9A%84%E5%9B%BE%E4%B9%A6%E7%AE%A1%E7%90%86%E7%B3%BB%E7%BB%9F/</id>
+    <published>2020-09-23T03:14:00.000Z</published>
+    <updated>2020-09-26T19:30:47.453Z</updated>
+    
+    <content type="html"><![CDATA[<p>本文将简单阐述利用C语言单项循环链表所写的图书管理系统，并在文末附上代码。<br>一、系统可实现功能<br>  该系统由两部分子系统组成，分别为学生系统与管理系统。<br>  Ⅰ.学生系统<br>  该部分可以实现的功能有：查找图书、借阅图书、归还图书、显示图书表。<br>  Ⅱ.管理系统<br>  该部分可以实现的功能有：插入图书、删除图书、显示图书表、查找图书、统计信息。<br>  <a id="more"></a><br>二、功能实现<br>  1.主函数<br>  该部分主要用于调用各功能函数，并实现系统切换、分级与界面切换。主要包括：</p><pre><code>  ①欢迎界面该界面可选择退出、进入学生系统、进入管理系统，一旦调用系统，则进入第一级循环。②学生系统该界面由终止条件为0(int)的第二级子循环组成，下包括4个功能。    Ⅰ.查找图书功能    若进入该功能，输入1(int)，进入搜索循环（第三级子循环），下包括4个功     能：按编号查找、按书名查找、按作者查找、按借阅状态查找（0：已借出    1：可借阅），通过输入相应数字及字符串进行查找，并返回相应的查找内容，    按任意键退出后返回上一级。    Ⅱ.借阅图书功能    若进入该功能，输入2(int)，进而调用借阅函数，输入编号进行借阅。    Ⅲ.归还图书功能    若进入该功能，输入3(int)，进而调用归还函数，输入编号进行归还。    Ⅳ.显示当前图书表    若进入该功能，输入4(int)，进而调用打印函数，打印当前图书表，按任意键    返回上一级。③管理系统该界面由终止条件为0(int)的第二级子循环组成，下包括5个功能。    Ⅰ.插入图书功能    若进入该功能，则由终止条件为返回值为0(int)的循环插入函数组成，可以按    &#39;*&#39;号退出循环，否则继续插入。    Ⅱ.删除图书功能    若进入该功能，则调用删除界面函数，进而选择按编号、书名、作者删除，终    止条件为0(int)。    Ⅲ.显示当前图书表    同学生系统Ⅳ。    Ⅳ.查找图书功能    同学生系统Ⅰ。    Ⅴ.统计功能    若进入该功能，则统计图书信息及借阅情况，按任意键返回上一级。</code></pre><p>  2.各功能函数<br>  该部分为各功能函数介绍，函数简介如下：</p><pre><code><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line">   <span class="comment">//返回值为0或1的欢迎界面函数</span></span><br><span class="line">   <span class="function"><span class="keyword">int</span> <span class="title">Home</span><span class="params">()</span></span>;</span><br><span class="line">   </span><br><span class="line">   <span class="comment">//返回值为0-4的学生界面函数</span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">Student</span><span class="params">()</span></span>;</span><br><span class="line">   </span><br><span class="line">   <span class="comment">//返回值为0-5的管理界面函数</span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">Admin</span><span class="params">()</span></span>;</span><br><span class="line">   </span><br><span class="line">   <span class="comment">//建立单项循环链表函数</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">InitdList</span><span class="params">(dLinklist *&amp;)</span></span>;</span><br><span class="line">   </span><br><span class="line">   <span class="comment">//返回值为0或1的插入功能函数</span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">Insert</span><span class="params">(dLinklist *)</span></span>;</span><br><span class="line">   </span><br><span class="line">   <span class="comment">//打印图书表函数</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">Print</span><span class="params">(dLinklist *)</span></span>;</span><br><span class="line">   </span><br><span class="line">   <span class="comment">//返回值为0-4的搜索界面函数</span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">Search_Home</span><span class="params">()</span></span>; </span><br><span class="line">   </span><br><span class="line">   <span class="comment">//搜索功能函数</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">Search</span><span class="params">(dLinklist *,<span class="keyword">int</span>)</span></span>;</span><br><span class="line">   </span><br><span class="line">   <span class="comment">//返回值为0-3的删除界面函数</span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">Delete_Home</span><span class="params">()</span></span>;</span><br><span class="line">   </span><br><span class="line">   <span class="comment">//删除功能函数</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">Delete</span><span class="params">(dLinklist *,<span class="keyword">int</span>)</span></span>;</span><br><span class="line">   </span><br><span class="line">   <span class="comment">//统计功能函数</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">Count</span><span class="params">(dLinklist *)</span></span>; </span><br><span class="line">   </span><br><span class="line">   <span class="comment">//借阅功能函数</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">Borrow</span><span class="params">(dLinklist *)</span></span>;</span><br><span class="line">   </span><br><span class="line">   <span class="comment">//归还功能函数</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">Return</span><span class="params">(dLinklist *)</span></span>;</span><br></pre></td></tr></table></figure></code></pre><p>  具体实现请下载附件。<br>三、功能概览<br>  如图所示。</p><p><img src="/images/pasted-46.png" alt="upload successful"></p><p><img src="/images/pasted-47.png" alt="upload successful"></p><p><img src="/images/pasted-48.png" alt="upload successful"></p><p><img src="/images/pasted-49.png" alt="upload successful"></p><p><img src="/images/pasted-50.png" alt="upload successful"></p><p><img src="/images/pasted-51.png" alt="upload successful"></p><p>四、附件下载<br>  附件中包含所有可运行函数，请使用DEV C++打开，使用VC等IDE须修改main返回值为void，并去掉主函数末尾返回值。</p><p><a href="/download/图书管理系统（正式版）v1.0.3.cpp&quot;">图书管理系统（正式版）v1.0.3</a></p>]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;本文将简单阐述利用C语言单项循环链表所写的图书管理系统，并在文末附上代码。&lt;br&gt;一、系统可实现功能&lt;br&gt;  该系统由两部分子系统组成，分别为学生系统与管理系统。&lt;br&gt;  Ⅰ.学生系统&lt;br&gt;  该部分可以实现的功能有：查找图书、借阅图书、归还图书、显示图书表。&lt;br&gt;  Ⅱ.管理系统&lt;br&gt;  该部分可以实现的功能有：插入图书、删除图书、显示图书表、查找图书、统计信息。&lt;br&gt;&lt;/p&gt;
+    
+    </summary>
+    
+    
+      <category term="项目" scheme="https://cunsy192.github.io/categories/%E9%A1%B9%E7%9B%AE/"/>
+    
+    
+      <category term="C语言" scheme="https://cunsy192.github.io/tags/C%E8%AF%AD%E8%A8%80/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>最差的期待</title>
+    <link href="https://cunsy192.github.io/2020/09/06/%E6%9C%80%E5%B7%AE%E7%9A%84%E6%9C%9F%E5%BE%85/"/>
+    <id>https://cunsy192.github.io/2020/09/06/%E6%9C%80%E5%B7%AE%E7%9A%84%E6%9C%9F%E5%BE%85/</id>
+    <published>2020-09-05T17:46:00.000Z</published>
+    <updated>2020-09-27T10:17:38.523Z</updated>
+    
+    <content type="html"><![CDATA[<div id="hexo-blog-encrypt" data-wpm="抱歉, 这个密码看着不太对, 请再试试." data-whm="OOPS, these decrypted content may changed, but you can still have a look.">  <div class="hbe-input-container">  <input type="password" id="hbePass" placeholder="" />    <label for="hbePass">您好, 这里需要密码.</label>    <div class="bottom-line"></div>  </div>  <script id="hbeData" type="hbeData" data-hmacdigest="f6e37375d2877f06360252d55c2fbf7775a2b2bd9092f231a6ff1ba283018835">8d1c50daf9324cb796c0013700b5ab08ac5ac7037af88f0c8eb27adc151999e85fb434c92e7d65b35e57ff14e35d3108347c295218c389933753df05a02e78ff33340c1b2f2c7accefa4af46e4695010206e071608be8c46c50e4e6f1d6ab38b18c44667035f15aa98e73f92a02177025575b55fa841cf36bbd983a92dfb5178a726a429d50c8cc10830fa4f3dac495292acad1854c48403ec778d185fb72a4cd58f1dbb5d75fa0f2c2d76cc1347f6168d2206427ec953fee169c2c074d019cbd32961ae497e4ff35ad3fa39ff1148cb5487c78261c361c5b94be7b8f5c94074d56155e89db14f4703af73f82ad1271a73040db1d3d2114016c6f1e6ef28bfe0cc89fb84147cb98b5cc5917619a76a5b5d951cf5bdd4bc0c85ab30055b8672c82cc304ee839ed483d6f1af622d7030d28aeb7c9fd64f6ea2fef01196700e8d4235df52e6d96609e5c2145dc9a424504000bd7b9cf405d96612eb23ae6d2226f733be402a325cf46afc99a3772dfd419c475f38926ff7cb96b64a14efca84cc62ac6f825149dfd2e5a6327014a7c64772c3c71aedf3e164211939a3cd05fe40bea248860430b1e5192257e0a95aff938d778fb85505ab08b9afa8ac45f5e3664e5b927b9f12f9ad7c9208d81a3d46802b34899ceb1985825792beb77f178dffda56ef85c124e559143e1d8f24e008a6a4208a52f318d2a3763be968cc659dbabcb5d65b2726a50418e200b0df6c1ba13a1d082e60a7e308e93356c4558bde2640fe639b2fbb7adca63a31696baac9a4260d1864dd6b3848342bd82d1bacb9102d6736a64de6a2cb7f3284ba797c48509a41fe65623a47de4f2be83e065b3fc547caa6e6ee3f219d66084f8cbec61b765bab968e65aa6453eb707a1cc01c2cf442caaee85cf8ee9e05c328029615d08bd33ebd57fe96972065c2848307f74defc3b8863951c106ee170523f6b7eea0fbf586910e8ebdd1992b7e1541e28b8be3b28f122361953bc0ee1f7bb9925d5df0b7290881464e84135e2b5170a5cd70c9d6b76c9ef39e334a335bcbab847afba8dfbef4d87e14c0c522029fd4a2eb955e06df61b7df8aaf9acd59e2b34f06a192b578dd6b9dfd50730dd977315de12e4fc456aab721225bba8d8cf112fe4e24cbe64ed28eb196f9dc39b6e6c6b8f46987043076406a9614f07bb8398cf21331ec5a5ba9f589d4450ac2e0623b7426aa0de99cee07e91d162d85af7fecd076fa1fdcbde014d305354b3d77b807857fe34cbe43462fba47439fa7c199d45c2117204396978e9852e381ca32c2447c262dcd0d95557dd96ee10fe54d9a019ff772067595f9b7779312685434abed664dcf905ced7aa676a61465c87963954df802ffc9a16db85e2a5635bf46fef82f84489f6b03cb7bffe62daddb2bd73cdb16981688223b4701ec3abd3796af2eb5668a0dbb47db89daaa7e09e83663870f6ed31a7a7133bc91867d6bf5c62c8cd698df922ee5d1cb590d83ed415e7119bfce32fb6ae3dc4500b6db0ae419583b77b39c690d64cd30e9d37ccc4a7a06350b3ddacf4d51298319be23b2fc97c0842e9bd640db05fcfcf3800b1313d86e84c50655e6ae2fa428e665b02533aec3ba61c1274c25ab74bb5b2a55a1d86ffbddf9dbe02787459e02f09fd8e4bd2421c360a601f83985a3ba6d888788e41ccc4bdd49c43207bb8b25c9bf661d577e81d19136e43cbdfb62a66be980da5ffdb905dd62e1a976ab87d4a3f0d877946185b7a02038f4666cfc75ae5c7bfb82faec88f342361f091a03129d297cb97fb6644a9858ed05416a4a65bc4c3c25c7c68b7961b7465e7852cdf173bd6f385d96c9ccc36384de64db865153f9b9cb91c0d3f9a50708f3d52f4fec05146dd667e109045f99065586353d3f1afc9a14c1b785e107082e61b169a7b6df594f16840530ed506f2a89bd39eeb00ec0675569c4c1047fee6be72196e96faae11c78602bdc5b98e640341312857619734a9cba034e00c63e0e3028dff2703257e7d87b509f75ce51891c19e8a6dd94bd370be670e2287aeb796d0a230824b1b1fdc92fe5e9d8d39236412a71d58fc0407a611adb1c19cedefa366f188524df783df3e7f7157dde3b22768c7d3d31f380bf65ad1a2df431e291c68c2336d30ddd99a9a45a5ca90824c121998791ac17261eb96bea52081b94bb80af885e72ae5b6a9414f0d4c2f225c4d1393713ac7d064642a0d5b3cc843d3c485de9d9ffd7c33b8853adce55cb56fe0de819c3fe264370ee1d3e81f44e525d6c45edb7c4433c54b079f48a9e6f9e9cc56992d9fdc0d7620594aceca6a2f037c32c2eb6b4628cab5985b2d8fd2a6749b1995a03fd46d7b7d289e15da3f02fb101ac3708025b2341d7eae47e9ac72731591e1f751b83ffe4de5cb51ef542fc251cf0209f6ada883986d0466f0ca088ec62edbc2820f1337605dfcfe436767bd5b82a5275391d105e66026538f3538fb63eb4ab658d21443bf2cc922700cf33e3c9bd10d9e52b470c629870c72cedbc8ae71cc44557eca7a39f312fcb362fec342969b9772ab1ef6ebbd2f3f9ead8b81dc6bbb6e8d5898afe20820994f8a7c3499b22eed51938d943f56047eba844e3726e6aa7050a53b0f046308a117833ab37e15e1ed2ca65721fb12b1d52c0f00090d297df94ed00326590dfa418002ef92bc8f36908e9817a666a82c56b3ed31b3ff1bbcb17aa5c0846830fa7bcb488edcb206f7d06bd3fc9c94380876bed0fbff38702aec340cab55521fafeb3e8ad7fd96d3a0481993b1d2543c6989fa19e287c43ffd497fc9ce4e05e54674e57832f173d0ecfe526f98b2c0ffafcc8f78e4af3757139b8555da064a33f4bbb1914db262e643623491005e0cffa76dc93e153e6d2e6a06b12614b66c9f7cfd77b4fcf23276d6bf66f1f809d829e9fd262898913c5deacff37d7ba591b01571b1ac0700747c6e3445ea2ba1598e3387ca03825e4da9d76a349bd398eb4a01193124c43957b95afd9ba001f23373d1efb3672ba596b58d9b74c95c65ff5d6128b7c5e0eacdec3396b5348ec19de01dbc066e8e2f7e911a7109f2e03b4e26ca24848a935e0ac0c7dffa29ee7f594351a3e5959f61c0293c3ea88e96766a82a7b84e378c5b8f38ab3e5c218b4968b500d7bdd628d8eeaa195790127539b5139e9c1d5896e37d6bf</script></div><script src="/lib/blog-encrypt.js"></script><link href="/css/blog-encrypt.css" rel="stylesheet" type="text/css">]]></content>
+    
+    <summary type="html">
+    
+      这篇文章进行了加密，如有需要请联系本人！
+    
+    </summary>
+    
+    
+      <category term="远方的日记" scheme="https://cunsy192.github.io/categories/%E8%BF%9C%E6%96%B9%E7%9A%84%E6%97%A5%E8%AE%B0/"/>
+    
+    
+      <category term="杂谈" scheme="https://cunsy192.github.io/tags/%E6%9D%82%E8%B0%88/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>基于matlab编程的“生日悖论”仿真模拟实验</title>
+    <link href="https://cunsy192.github.io/2020/09/03/%E5%9F%BA%E4%BA%8Ematlab%E7%BC%96%E7%A8%8B%E7%9A%84%E2%80%9C%E7%94%9F%E6%97%A5%E6%82%96%E8%AE%BA%E2%80%9D%E4%BB%BF%E7%9C%9F%E6%A8%A1%E6%8B%9F%E5%AE%9E%E9%AA%8C/"/>
+    <id>https://cunsy192.github.io/2020/09/03/%E5%9F%BA%E4%BA%8Ematlab%E7%BC%96%E7%A8%8B%E7%9A%84%E2%80%9C%E7%94%9F%E6%97%A5%E6%82%96%E8%AE%BA%E2%80%9D%E4%BB%BF%E7%9C%9F%E6%A8%A1%E6%8B%9F%E5%AE%9E%E9%AA%8C/</id>
+    <published>2020-09-03T11:48:00.000Z</published>
+    <updated>2020-09-27T10:18:31.073Z</updated>
+    
+    <content type="html"><![CDATA[<h3 align="center"> 摘要 </h3><p>  本文针对概率论老师提出的“生日悖论[1]”问题进行研究，通过matlab编程实现仿真，并将最终结果以图片形式表示出来。<br><a id="more"></a> </p><p></p><h5 align="left"> 关键词： </h5> 仿真 古典概型 生日悖论 matlab tabulate函数 函数化<p></p><h3 align="center"> 一、问题重述 </h3><p>  老师要求我们以“生日悖论”为题，在10人、30人、60人、90人的情况下随机输入每个人的生日y，输出图表，图表内容包括：<br>  1、横坐标为迭代次数x（x∈[1,200]）；<br>  2、纵坐标为日期y(y∈[1,365])；<br>  3、黑色叉号(x)表示不重复日期；<br>  4、红色叉号(red X)表示重复日期;<br>  5、标题包括本次迭代中仿真人数（/人）和至少有两人生日重复频率（P）。</p><h3 align="center"> 二、问题分析 </h3>  针对此问题，使用matlab编程，将1~365的随机数分别表示为10、30、60、90的向量，针对向量排序并统计重复数，将≥2的日期表示出来，并以向量表示，利用函数建立坐标，将每一次仿真的图像以黑色与红色叉号的形式表示在图上，重复200次，完成图像；同时，统计红色叉号与黑色叉号的数量，得出P；利用函数化主程序进行分块，得出结论。<h3 align="center"> 三、编程 </h3>首先解决随机化问题，这里使用了常见的随机数函数<figure class="highlight matlab"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">round</span>(<span class="built_in">rand</span>(<span class="number">1</span>,h)*<span class="number">365</span>);</span><br></pre></td></tr></table></figure>利用plot打印黑叉。之后，利用tabulate()函数统计出向量各值的重复情况，这里以一次模拟为例：<figure class="highlight matlab"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">...       ...      </span><br><span class="line"><span class="number">353</span>        <span class="number">0</span>      </span><br><span class="line"><span class="number">354</span>        <span class="number">0</span>      </span><br><span class="line"><span class="number">355</span>        <span class="number">2</span>      </span><br><span class="line"><span class="number">356</span>        <span class="number">0</span>      </span><br><span class="line"><span class="number">357</span>        <span class="number">0</span>     </span><br><span class="line"><span class="number">358</span>        <span class="number">0</span>     </span><br><span class="line"><span class="number">359</span>        <span class="number">3</span>    </span><br><span class="line"><span class="number">360</span>        <span class="number">0</span>    </span><br><span class="line"><span class="number">361</span>        <span class="number">0</span>     </span><br><span class="line"><span class="number">362</span>        <span class="number">0</span>      </span><br><span class="line"><span class="number">363</span>        <span class="number">0</span>    </span><br><span class="line"><span class="number">364</span>        <span class="number">1</span></span><br></pre></td></tr></table></figure>取第二列大于等于2所对应的日期，标记为另一个向量，并打印，标记为红叉；迭代200次，分块，得到最终图像，效果如下：![upload successful](/images/pasted-45.png)可以看见，当人数大于30时，发生生日重复的概率已经超过70%，这与直觉相悖，故称“生日悖论”。<h3 align="center"> 四、总结 </h3><p>  本文针对生日悖论的实际情况进行仿真，得出以上图像，从而直观上证明了生日悖论的反直觉性。</p><h3 align="center"> 五、参考文献 </h3>  <p>[1]<a href="https://baike.baidu.com/item/%E7%94%9F%E6%97%A5%E6%82%96%E8%AE%BA/2715290?fr=aladdin" target="_blank" rel="noopener">https://baike.baidu.com/item/%E7%94%9F%E6%97%A5%E6%82%96%E8%AE%BA/2715290?fr=aladdin</a></p><h3 align="center"> 六、附件 </h3>  <p>函数：</p><figure class="highlight matlab"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="params">[P]</span> = <span class="title">bir</span><span class="params">(h,it,x,y,z)</span></span></span><br><span class="line">cnt = <span class="number">0</span>;</span><br><span class="line">subplot(x,y,z);</span><br><span class="line"><span class="built_in">hold</span> on;</span><br><span class="line"><span class="keyword">for</span> k = <span class="number">1</span> : it,</span><br><span class="line">    A = <span class="built_in">round</span>(<span class="built_in">rand</span>(<span class="number">1</span>,h)*<span class="number">365</span>);</span><br><span class="line">    A  = <span class="built_in">sort</span>(A);</span><br><span class="line">    <span class="built_in">plot</span>(k,A,<span class="string">'black x'</span>);</span><br><span class="line">    <span class="built_in">hold</span> on;</span><br><span class="line">    M = tabulate(A);</span><br><span class="line">    X = [];</span><br><span class="line">    [m,n] = <span class="built_in">size</span>(M);</span><br><span class="line">    <span class="keyword">for</span> <span class="built_in">i</span> = <span class="number">1</span> : m,</span><br><span class="line">        <span class="keyword">if</span> M(<span class="built_in">i</span>,<span class="number">2</span>) &gt;= <span class="number">2</span>,</span><br><span class="line">        X = [X,M(<span class="built_in">i</span>,<span class="number">1</span>)];</span><br><span class="line">        <span class="keyword">end</span></span><br><span class="line">    <span class="keyword">end</span></span><br><span class="line">    aa = <span class="built_in">size</span>(X);</span><br><span class="line">    <span class="keyword">if</span> aa ~= <span class="number">0</span></span><br><span class="line">        <span class="built_in">plot</span>(k,X,<span class="string">'red X'</span>);</span><br><span class="line">        <span class="built_in">hold</span> on;</span><br><span class="line">    <span class="keyword">end</span></span><br><span class="line">    <span class="keyword">if</span> aa == <span class="number">0</span></span><br><span class="line">        cnt = cnt + <span class="number">1</span>;</span><br><span class="line">    <span class="keyword">end</span></span><br><span class="line"><span class="keyword">end</span></span><br><span class="line">P = <span class="number">1</span> - cnt / it;</span><br><span class="line">title([num2str(h),<span class="string">'人，P='</span>,num2str(P)]);</span><br><span class="line"><span class="built_in">hold</span> on;</span><br></pre></td></tr></table></figure><p>主程序：</p><figure class="highlight matlab"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">bir(<span class="number">10</span>,<span class="number">200</span>,<span class="number">2</span>,<span class="number">2</span>,<span class="number">1</span>);</span><br><span class="line">bir(<span class="number">30</span>,<span class="number">200</span>,<span class="number">2</span>,<span class="number">2</span>,<span class="number">2</span>);</span><br><span class="line">bir(<span class="number">60</span>,<span class="number">200</span>,<span class="number">2</span>,<span class="number">2</span>,<span class="number">3</span>);</span><br><span class="line">bir(<span class="number">90</span>,<span class="number">200</span>,<span class="number">2</span>,<span class="number">2</span>,<span class="number">4</span>);</span><br></pre></td></tr></table></figure><p>实验原图下载：<br><a href="/download/final.fig&quot;">final</a></p>]]></content>
+    
+    <summary type="html">
+    
+      &lt;h3 align=&quot;center&quot;&gt; 摘要 &lt;/h3&gt;
+
+&lt;p&gt;  本文针对概率论老师提出的“生日悖论[1]”问题进行研究，通过matlab编程实现仿真，并将最终结果以图片形式表示出来。&lt;br&gt;&lt;/p&gt;
+    
+    </summary>
+    
+    
+      <category term="数学建模" scheme="https://cunsy192.github.io/categories/%E6%95%B0%E5%AD%A6%E5%BB%BA%E6%A8%A1/"/>
+    
+      <category term="作业随想录" scheme="https://cunsy192.github.io/categories/%E6%95%B0%E5%AD%A6%E5%BB%BA%E6%A8%A1/%E4%BD%9C%E4%B8%9A%E9%9A%8F%E6%83%B3%E5%BD%95/"/>
+    
+    
+      <category term="matlab" scheme="https://cunsy192.github.io/tags/matlab/"/>
+    
+      <category term="概率论" scheme="https://cunsy192.github.io/tags/%E6%A6%82%E7%8E%87%E8%AE%BA/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>活下来了</title>
+    <link href="https://cunsy192.github.io/2020/08/26/%E6%B4%BB%E4%B8%8B%E6%9D%A5%E4%BA%86/"/>
+    <id>https://cunsy192.github.io/2020/08/26/%E6%B4%BB%E4%B8%8B%E6%9D%A5%E4%BA%86/</id>
+    <published>2020-08-26T04:27:00.000Z</published>
+    <updated>2020-09-27T10:18:52.954Z</updated>
+    
+    <content type="html"><![CDATA[<p>惊闻英语成绩出了，一看没有挂科，顿时又有了学习的念头。<br>于是有以下通知：<br><a id="more"></a><br>博客将于近期恢复更新，配合周志华的书籍和吴恩达的网课对机器学习方面的学习、理解、体会进行写作，谨以此告，泪目。</p><p>村山羊<br>2020.8.26 宣（搞得和文件一样hhh）</p>]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;惊闻英语成绩出了，一看没有挂科，顿时又有了学习的念头。&lt;br&gt;于是有以下通知：&lt;br&gt;&lt;/p&gt;
+    
+    </summary>
+    
+    
+      <category term="通知" scheme="https://cunsy192.github.io/categories/%E9%80%9A%E7%9F%A5/"/>
+    
+    
+      <category term="通知" scheme="https://cunsy192.github.io/tags/%E9%80%9A%E7%9F%A5/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>七夕、期末考试及其他</title>
+    <link href="https://cunsy192.github.io/2020/08/25/%E4%B8%83%E5%A4%95%E3%80%81%E6%9C%9F%E6%9C%AB%E8%80%83%E8%AF%95%E5%8F%8A%E5%85%B6%E4%BB%96/"/>
+    <id>https://cunsy192.github.io/2020/08/25/%E4%B8%83%E5%A4%95%E3%80%81%E6%9C%9F%E6%9C%AB%E8%80%83%E8%AF%95%E5%8F%8A%E5%85%B6%E4%BB%96/</id>
+    <published>2020-08-25T15:36:00.000Z</published>
+    <updated>2020-09-27T10:19:33.333Z</updated>
+    
+    <content type="html"><![CDATA[<div id="hexo-blog-encrypt" data-wpm="抱歉, 这个密码看着不太对, 请再试试." data-whm="OOPS, these decrypted content may changed, but you can still have a look.">  <div class="hbe-input-container">  <input type="password" id="hbePass" placeholder="" />    <label for="hbePass">您好, 这里需要密码.</label>    <div class="bottom-line"></div>  </div>  <script id="hbeData" type="hbeData" data-hmacdigest="203550ec4474702ecfadf84d6822b9f9e2bf7c8da215166f7b034b959073bcbf">bd062ad7d524cc8634c262fe8f1e9e0aa4d90a90f295868eff86f201af7b425e76ad305acbf5d8b07fa2040ab2b8e36777140349e937729e81274b21705f94a66ba9de3a1d26f7e461349606ea64406bdc72f8ee96c6bc05375b8ba6d27024445d2e973aaad297f193c34ef00de1467ea0b3094efff4a6e4ad97b5d1bea738398194afedbf0a879d17dce05b3f0a4e2099bf3ff8004e6a869c28db5c1345fb314c1f248eaa69bcd25b6eb094df640060ff8717203abe5016066bf4fe48e2a38044f0bdbfad90be7d828d2ee437bca3dbac455c14e3bfc148343e99cda53b195e03e246425b3ad7080921575305cf40f528744840911170b7ffff5fc9466cc325bbd3dabe4f089e3d88f1c7155c802b69ce5ef8a1355a9e705ec045a70272d70dac738b2d23a9c47824a7adbfe002fad2c18acabef089c8e1693b11248d635283a7963045dec0ddff9c8ba2e925274247182b2a8b5e961f1d57c1220344110aeef5289ca9531781a6139a1ef29cce11df0ca189b4a3eecfa2cf3ed8947aa855397c2dc2246b4801bd00d949538f4884226724691f2a470cc627056c6afc5992e2288a2b3e870a97a31d6569bae9cb00f6589eefccd66449e8bd27190a7aa97b88a41f5579b6c6fcfa857483d8e08421dfc1eaa5a22d871de5d8bce3248148e7508f5a0baa1aa24e18e1a59d73be72ff639319dbf81bb8aed53d868907d8a3093639bc015661940e3929d54c32f3d9653cabd0eb8504bbae3fb01a3755790950192016e88e1a19f8419d09fa189d459737451eb9910fa33b6fc3b9932a471b4b4c2f7826b58da57721ebf875ab4f5edd7a42a2b5b5a17ede6d8ce2dfdf07a892cc9205cd77daae81ce736581081d00b79051dddf3f2ec812da8384778a09e205f7dddaff55de52edab41598fe2290949e30b7a7e288bd78c83667420642d6e87e9058765a5933cd52aa8d0840a958534306142c3f00c20e2e902d48d58ca3487a8119497d629382b7ab55a95bae92e30723add7792f118ca4708ac787eb147921d9a68a8422c3e01cc0a912a03f7825115d1213f4232b70054671b6b8b8fb7d267c1e2659c5b8100c7fd9092fa784a365558b5d0e703e5774b828c30eb81fbf2f90643b3e04b68cb7d7f1bcecc3d886f96013adbccd656e5d063844ae6983cd550f5ee0db8181a6e42afd93617fd33ee8e0c10dca4c67617d589f04fec2e82031bbc896c7f97deb2f7fcf50d1463ae02a82ca7cb99c99a65e8310a17c8e3432c345d8bb44beba27fbaeac785b7e4703f8b018b1325e3e5f5970444c8cfa68e9185e5d96a0898d7776850b0664bcc9a86998fce4b0102b62a5a67fd3ecf8ff67c2d1ac911023efc0c26094a23c945609d0610e474f2837de4a5095e5c9ccd29792579e3bb9acd96d1db8ddc7ed557f16a11660ef573e1d0e9a09c195de3292ae6d0fafae646c6d50feaf2985e43f0331eed13fc87a42d27cb67daef5d23ed6445ed2b651bd1cff7e55ddccbd8dffede589470e7612dee9f4f02bc1900508accfd3f399858dc9af33e298b9fd0a1c8733d9b76b666f6c3494d26345dad30d9b6f40dbf39edb411c12a4f57530e87116de196fdb50cb9a0955316a23a7860b242f3f35f4e8a6b285b7aaeda6002d37393f14874dda9563ea2174430927559f53451757daff489769fa106c46a208eb6f26e5ef48049525e6737f2fdb646e0c35e08116e9fe7d9bb551a9ac120213888bde6af03decb7129c491a3cb762776151e8e220ff2f33a5c86e4b34754922d9c1a142920cd1dd3022d0d8818c90dc27b67d9b6754253c2b5ece820d6a9c6ee32c24895f581b14353d5e01f3966af726091c5f0f03786118fa8f706dab5a1f286b5c561ca9047c52e3247767254b4d4fa4ec8eda84e5f6d3815ef7352d57057cf7ecd78e1883958cb2c925dea92b41076839f545e351fd5b11a6faa18d5810bf5ca281d231d2029b4d36fa48db87938481d2b72066904bb8956b3947fa8b3d1141f35d0dde5d9bd743527e8893f887b25feb441d7efe3b3aa9867707140880c06bf9ad6d128aeae48e248cf0e48f20ee6a3d5232af7dc5ed5d211811f2313027e3ce9e0b842319fa6165de753f50df0212fd84f420b14de672050457075078916a1c673cc8694adb75a4556d43e46867cca3520469dd061c29fd04ad673c41760fa2d9e369ab11f9939d190ee9fc844e5af8af184163321b25bc83f3ed4e4157f396a8a3be795617661f54773611a73e3d7e2e9b49706b86edb7e1660703cb79a67225ec9d4a8051f8a3fba5c0bb42d70eea7c1adfa5f26a682c60a89277061e52dba6e7fb0fc47262cdb76cfdc25d822650c34b40c230080c7032f8b4785aaa5655bf69f36d3fbbef68e90e02f80c46dfb9d78ff13337e8e12be72fc0e77f32db83db5f4711fe753e791dc818113da3157be49271b14b05f5612f92f306a7192fa50be32e7a5a58a57bd0d3079e8f2e691bb45ae9d89506831ee8a9961ffda20d3f80b846f39fe6f62ba14ff2f2fa953908daf5cb4193ee4867b4540edfeed7647d5d82d1967d9b2df5c37cd2bbe42bd7b8e1b31e380dc2e2f587030138c4d96f23d345cb3f8c6a6eddaef87248e9b77ccfe49dd31fb592e4e5130f023664618f936b4c43606d2832ed8d9ba7a17442062128f4d0b4674f4589f14e4c2a38d4105b4712eb70a8d621591b27db023b464aeb3cb57525be2f56b3711bc20b10705e6393a8fe2030c4609e286986dbfe6f8257a7670efbe5fc8a24be0a3cdc46e573a1d4ec448e58e533ba2eaa681f1662f2a1c180cd9fcdcd20c1ad279700f02381460c4f94512a26e5d459d7e28bbaf75b3d9d0857ee29ad8393bfa2fc8a95d36d1b17d71a25dd57e2088a14ce3231a1933ffd01a0d51847ff86c606b0c8c8e39383f9895962ef2514dab4082a3f548adfcac5312339007ac10c4237afb509bf2c2a5b8f65a8b11ae0055f2a09bc7f3b632108d4d7ed1bffe12897b645be94b0fa46dbbf661926a68ccb61b78bee34a56023f6415e7dcbb3ba405cef1746774d2af3f9a766901ea3de66ef074516fcab87710b4d0f11c7530a98bcab8bf0fdeade10b9f27f03135ff8a0646919255b329c63c5a303990f4455153042e43c989932bd514dc063385739d6837445694276dc4b139a7d75ed5aaef35bdbca4714987c39ed87563615dceba4b4b2b68445ee88a131343d8acacddf732d88b56fa916eb8f700d3600301821af16d87d867d0846d07484ff7e99531b501cf749568c19d88eeaa405bffda379ea5f1f3687bdc75a461b407bca92df44a575251257323a7d8517371f9eabb9333fddfb91c528b27831ab743e7e96e9a5a48dbb154c3ac3785c6f67b5bfafcea3b71666d7a42e14870d2894104d72d1ae1bc91eec2c42cab0143e5e4de7fd38dd1fed3d78bf71aedfe0e48660834086a2b2467039633ebc6195a57512816b78a5b476f28a150b744ad40ff5fc29f39664614f46391b020ff1536b1a1386550281f32ee56bf4fb8bf681cad695172ba4498338c5d0ba1bb6432f0a70da1789bee95ebdf609cfe8d6633775c2aa8fbc5ce503bd2a8f9095235f7a7017630a55998ff417f36443b2236d572c1eaa102c076af1e8c860a02439d32b59a3dedf2778111e33a486f852dd0934a651bd6451fd1b32077073c831436bdda1872a0eb6f6d2edda3ef40a963773481d1d51a63d4e799068c60d69cb769479f737ba8b54813081ed147ae9f38b815a7c26a3fe31eec38a94eb57def1f00e78d2b593ec047c6e6d6b58262d92ecb43271ccd9d581833ba1df9a24fedc5caba338cf0771b6d6356c5b7350ca5a6e076d1621e01e12dae50ca9aec7251e42f01d8a90f49a3ed297b0a3edc3b6a1c033b0d65bd8264ec0d7ef42783f10fe004a484d59bd9f35db123bc66613334bb086dd8eeac12d12a8f556efb90eefa415b7e072befdab66bfb4239ef44b542672a927a19f966182fde7b3814c7d91c35822067f57002ca7c813c3d23866e8d9135e9224f6e3ed2da754a804d3a4b981234181a21bd54d248434699ffe21c860bf500568531214db5a1c57208fb3bee9aaaae5f6e53f6f1ccdd098a7de37afc465bf33a59e851ed666af9dca7acdd4581a0be9e33921a0d30d959a145f9366325fed578283f365006e322563589f7a0128a1e15f26898dac56a15a561746904e39e2b819fe5bc7219485dca452446884786fae6672bf9bf1b3c3ad941bfc4be4df20360b99fedc379b71abb26d3af6e116fc991126e229bc3a04a8a6aaf8335f0f2c7becacbe92276c73df45563bb5bf7ab27877f5159436bbd6b6603cc8a4e8e5324d7a236deec23906057d609474d964855ed39676b4b1faefb0f40619a18eca1849a217f16d689e9b6fe3e6dd7711c910eb3811a61190eb69f54573d0b3ffd64d93c1178f2942cff6a6ac399a583fe7bbea0171aed7da845db5c077b231ea9271deb0a10a99c1991298bd375b2cd7d5856a1555e92b2c50677d1623487aa03659075f9d92916b231e92d86dcc43338cc7632aa6f0f6823ce457853fc2d227d15293eec420974eeb4ee8bf9fd2d363822748752a6bf60417600c124761755098ddba688cc6ccda3ae64944f4d2456afd98dd68cc811fe9d3ad9d16285ba92ba4e15ab2c55ffbc534999e21de9063ba312f721e4d2f28865b529d00077d46d31714871191c2f3891438c92cef09c913e5e389d7861c09a9379d0c3a5581d41c78d1449a505c1513e47219e93ecd37c4ea9c423d5797bee5451d2e70e201f5f4b855e94f8e42850beb29ac8b00e991fdff0aa9673deff1ce7b7f5ed48bc1cf05c3ad450fac7d39d1cc94fd218fe69d64b591644d798a7947958426f503728e8b0a3839661f4d3707f970c16db1bcacc09c644aeda8024ebb393e2fcc03e5fa2c41169222e205d47f54b12408c64d1a73a7a813107822ba6d010fef74aa61753f437c19a325c8d0af544b81960b614615cfdb2735015c24e53c01a2406a9748b47057b140d371bf1f3db721f6f997a9d70f0be325459b57055a9ee1828b820a0e87aaa0e803a0539d3c74894ef3c6e8bf625952c34ad5096d6f5d39c6f7a47326534fb02cfc30ec9d5342c78536d1178c33bc3305535f4f3c8fd38e14db7b16b33736d953b9ec3251aadcae1b26d42f381e480d843aa3307bda1d865999d1545218d0c4cdb908fa344d0b5c3abb5354729321f8dc155ba54ad675e6170f725e3d0f52a1edb148b89dbf7f71e8045eb4bea7d4eed99ccf80ed47de77cbb374a22390a92e843</script></div><script src="/lib/blog-encrypt.js"></script><link href="/css/blog-encrypt.css" rel="stylesheet" type="text/css">]]></content>
+    
+    <summary type="html">
+    
+      这篇文章进行了加密，如有需要请联系本人！
+    
+    </summary>
+    
+    
+      <category term="远方的日记" scheme="https://cunsy192.github.io/categories/%E8%BF%9C%E6%96%B9%E7%9A%84%E6%97%A5%E8%AE%B0/"/>
+    
+    
+      <category term="杂谈" scheme="https://cunsy192.github.io/tags/%E6%9D%82%E8%B0%88/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>数值计算相关方法（求根）</title>
+    <link href="https://cunsy192.github.io/2020/06/28/%E6%95%B0%E5%80%BC%E8%AE%A1%E7%AE%97%E7%9B%B8%E5%85%B3%E6%96%B9%E6%B3%95%EF%BC%88%E5%88%86%E6%AD%A5%E6%9B%B4%E6%96%B0%EF%BC%89/"/>
+    <id>https://cunsy192.github.io/2020/06/28/%E6%95%B0%E5%80%BC%E8%AE%A1%E7%AE%97%E7%9B%B8%E5%85%B3%E6%96%B9%E6%B3%95%EF%BC%88%E5%88%86%E6%AD%A5%E6%9B%B4%E6%96%B0%EF%BC%89/</id>
+    <published>2020-06-28T14:43:00.000Z</published>
+    <updated>2020-09-27T10:19:50.314Z</updated>
+    
+    <content type="html"><![CDATA[<h6 align="right"> 作者：村山羊 </h6>本文针对数值计算求根方法做出matlab的编程实现，并给出效果图和相对误差分析图（又可以水一篇博客了233）。<a id="more"></a>--------------------------<h1 align="center"> 目录 </h1><h3 align="left"> 序言 </h3><h3 align="left"> 读者须知 </h3><h4 align="left"> 1、交叉法求根 </h4><h6 align="left"> Ⅰ、逐步搜索法 </h6><h6 align="left"> Ⅱ、二分法 </h6><h6 align="left"> Ⅲ、比例求根法 </h6><h4 align="left"> 2、迭代法求根 </h4><h6 align="left"> Ⅰ、牛顿法 </h6><h6 align="left"> Ⅱ、弦截法 </h6><h3 align="left"> 参考文献 </h3><h3 align="left"> 附录 </h3>--------------------------<h4 align="left"> 序言 </h4>    要求一个方程的根，这个经典的数学问题在初中就已经出现了，随着学历的增长，我们接触到了许多奇奇怪怪的方程，像n元m次方程等。我们求解这些方程的方式一般是利用数学的方式计算，但在工程数学中，很多时候我们不需要知道他们的确解，而是只要计算出他们的近似解就行，这种计算近似解的方法是数值计算要求掌握的。<h4 align="left"> 读者须知 </h4>(1)本文中所提到的观点纯属自己理解，有适当参考文献，并在文中标出引用，在文本参考文献提到；(2)本文中提到的相对误差指的是|迭代当前值-收敛值/收敛值|；(3)本文所著权归@村山羊，转载请联系QQ：1036814872，如有不足，欢迎提出；(4)文中所用matlab为正版，所用程序可在matlab及相似环境中运行，全程序可供下载，具体移步文末附录；(5)如有其他问题（如法务等），请及时联系本文作者，联系方式如上。一个有解的方程有他的实根，但很多情况下我们解不出来（想起了高中的隐函数问题了吗hh）。这里以cosx-x=0和x<sup>12</sup>-1=0这两个方程为例。<h5 align="left"> 1、交叉法求根 </h5>交叉法其实在英文中为Bracketing Method，顾名思义，就是用括号去“括”根所在的区间，这里介绍两种方法。<h6 align="left"> Ⅰ、逐步搜索法 </h6>设有连续可导函数f(x)，存在区间x∈[a,b]，使得f(x)=0，x称为f(x)=0在[a,b]上的根。那么我们将a到b之间分为n等分，每一份求出其x对应的f(x)的值，根据零点存在定理[1]可以确定f(x)符号相反的相邻两点间存在方程的解，所以我们继续将这两个点作为新的区间，再重复上述步骤，直到得到最后的结果。例：编程求cosx-x=0在x∈[0,1]间的解。这里在区间中插入4个值，用matlab编程，代码如下：<figure class="highlight matlab"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">%设定端点值 a,b</span></span><br><span class="line"><span class="comment">%设定迭代次数 i</span></span><br><span class="line"><span class="comment">%设定步长（间隔距离）h</span></span><br><span class="line"><span class="comment">%设定函数值 fc</span></span><br><span class="line"><span class="comment">%设定空数组 k ,用于储存搜索区间内各值（迭代后清空）</span></span><br><span class="line">a = <span class="number">0</span>;</span><br><span class="line">b = <span class="number">1</span>;</span><br><span class="line"></span><br><span class="line"><span class="built_in">i</span> = <span class="number">0</span>; </span><br><span class="line">h = (b-a)/<span class="number">5</span>;</span><br><span class="line"></span><br><span class="line">c = a; <span class="comment">%结果及计算过程用c表示</span></span><br><span class="line"></span><br><span class="line">fc = <span class="built_in">cos</span>(c)-c;</span><br><span class="line"></span><br><span class="line">k = [];</span><br><span class="line"></span><br><span class="line"><span class="keyword">while</span> <span class="built_in">i</span> &lt; <span class="number">20</span>, <span class="comment">%设定迭代20次，也可用det误差设定条件</span></span><br><span class="line">    <span class="built_in">i</span> = <span class="built_in">i</span> + <span class="number">1</span>; <span class="comment">%迭代次数+1</span></span><br><span class="line">    <span class="comment">%求出搜索区间中各值</span></span><br><span class="line">    <span class="keyword">for</span> <span class="built_in">j</span> = <span class="number">0</span>:<span class="number">5</span>,</span><br><span class="line">        c = a + h*<span class="built_in">j</span>;</span><br><span class="line">        fc = <span class="built_in">cos</span>(c)-c;</span><br><span class="line">        k = [k,fc];</span><br><span class="line">    <span class="keyword">end</span></span><br><span class="line">    </span><br><span class="line">    <span class="keyword">for</span> j1 = <span class="number">1</span>:<span class="number">5</span>,</span><br><span class="line">        <span class="keyword">if</span> k(j1)*k(j1+<span class="number">1</span>) &lt; <span class="number">0</span>,</span><br><span class="line">            b = a + h*j1;</span><br><span class="line">            a = a + h*(j1<span class="number">-1</span>);</span><br><span class="line">        <span class="keyword">end</span></span><br><span class="line">    <span class="keyword">end</span></span><br><span class="line">    h = (b-a)/<span class="number">5</span>;</span><br><span class="line">    k = [];</span><br><span class="line">    det(<span class="built_in">i</span>) = <span class="built_in">abs</span>(<span class="number">0.739085133215171</span> - c)/<span class="number">0.739085133215171</span>; <span class="comment">%相对误差</span></span><br><span class="line"><span class="keyword">end</span></span><br></pre></td></tr></table></figure>     需要注意的是，matlab中相对误差是估算出来的，便于计算迭代效率。最终结果为<figure class="highlight matlab"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">c =</span><br><span class="line"></span><br><span class="line">   <span class="number">0.739085133215171</span></span><br></pre></td></tr></table></figure>迭代次数-相对损失折线图如下：![upload successful](/images/pasted-33.png)结果非常amazing啊，这个程序不到6次就近乎收敛，现在我们求另一个方程x<sup>12</sup>-1=0的正根。例：编程求x<sup>12</sup>-1=0的正根。相同地，我们对上面地程序进行改动，即将<figure class="highlight matlab"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">fc = <span class="built_in">cos</span>(c)-c;</span><br><span class="line">det(<span class="built_in">i</span>) = <span class="built_in">abs</span>(<span class="number">0.739085133215171</span> - c)/<span class="number">0.739085133215171</span>;</span><br></pre></td></tr></table></figure>改成<figure class="highlight matlab"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">fc = c^<span class="number">12</span><span class="number">-1</span>;</span><br><span class="line">det(<span class="built_in">i</span>) = <span class="built_in">abs</span>(<span class="number">1</span> - c)/<span class="number">1</span>;</span><br></pre></td></tr></table></figure>运行，刚好得到收敛的值<figure class="highlight matlab"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">c =</span><br><span class="line"></span><br><span class="line">   <span class="number">1.000000000000053</span></span><br></pre></td></tr></table></figure>      这里的误差是计算机产生的，无法避免同样，迭代次数-相对损失折线图如下：![upload successful](/images/pasted-34.png)也是不到几次就近乎收敛。<h6 align="left"> Ⅱ、二分法 </h6>现在来介绍二分法的相关内容。二分法这种方法其实在初等数学的学习中就已经掌握了，大学无非是对其做一个编程实现，重提下原理：设一连续可导函数f(x)，其f(x)=0的根存在[a,b]中，那么我们先将a到b的这块区间对半分((a+b)/2)，将其设为c，根据之前提到的零点定理求出根所在的区间，改变区域的值（是不是和之前的做法很像？），从而进一步缩小范围，直到足够逼近解。例：编程求cosx-x=0在x∈[0,1]间的解。<figure class="highlight matlab"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">%设定端点值 a,b</span></span><br><span class="line"><span class="comment">%设定迭代次数 i</span></span><br><span class="line"><span class="comment">%设定步长（间隔距离）h</span></span><br><span class="line"><span class="comment">%设定函数值 fc</span></span><br><span class="line"><span class="comment">%设定空数组 k ,用于储存搜索区间内各值（迭代后清空）</span></span><br><span class="line">a = <span class="number">0</span>;</span><br><span class="line">b = <span class="number">1</span>;</span><br><span class="line"></span><br><span class="line"><span class="built_in">i</span> = <span class="number">0</span>; </span><br><span class="line"></span><br><span class="line">c = (a+b)/<span class="number">2</span>; </span><br><span class="line">fa = <span class="built_in">cos</span>(a)-a;</span><br><span class="line">fb = <span class="built_in">cos</span>(b)-b;</span><br><span class="line">fc = <span class="built_in">cos</span>(c)-c;</span><br><span class="line"></span><br><span class="line"><span class="keyword">while</span> <span class="built_in">i</span> &lt; <span class="number">20</span>, <span class="comment">%设定迭代20次，也可用det误差设定条件</span></span><br><span class="line">    <span class="built_in">i</span> = <span class="built_in">i</span> + <span class="number">1</span>; <span class="comment">%迭代次数+1</span></span><br><span class="line">    <span class="keyword">if</span> fa*fc &lt; <span class="number">0</span>,</span><br><span class="line">        b = c;</span><br><span class="line">    <span class="keyword">end</span></span><br><span class="line">    <span class="keyword">if</span> fb*fc &lt; <span class="number">0</span>,</span><br><span class="line">        a = c;</span><br><span class="line">    <span class="keyword">end</span></span><br><span class="line">    c = (a+b)/<span class="number">2</span>;</span><br><span class="line">    fa = <span class="built_in">cos</span>(a)-a;</span><br><span class="line">    fb = <span class="built_in">cos</span>(b)-b;</span><br><span class="line">    fc = <span class="built_in">cos</span>(c)-c;</span><br><span class="line">    det(<span class="built_in">i</span>) = <span class="built_in">abs</span>(<span class="number">0.739085133216</span> - c)/<span class="number">0.739085133216</span>; <span class="comment">%相对误差</span></span><br><span class="line"><span class="keyword">end</span></span><br></pre></td></tr></table></figure>输出为：<figure class="highlight matlab"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">c =</span><br><span class="line"></span><br><span class="line">   <span class="number">0.739084720611572</span></span><br></pre></td></tr></table></figure>误差图为：![upload successful](/images/pasted-35.png)另一实例同理，这些程序将在文末的附录中给出。例：编程求x<sup>12</sup>-1=0的正根。程序见附录①，结果为<figure class="highlight matlab"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">c =</span><br><span class="line"></span><br><span class="line">     <span class="number">1</span></span><br></pre></td></tr></table></figure>误差图如下：![upload successful](/images/pasted-37.png)            一次即收敛！这是因为我用区间[0,2]来使用二分法，必然一次收敛。<h6 align="left"> Ⅲ、比例求根法 </h6>经过前面两个方法，其实大家对交叉法的三个子方法应该有所了解了，这个比例求根法（据我所见）其实是对逐步搜索法和二分法的一个优化，将搜索的效率提高了。原理与二分法相同，只是不是真正地“二分”，而是按比例分割，这里仍以cosx-x=0及x<sup>12</sup>-1=0为例，代码见附录②及附录③，误差图如下：<h6 align="center"> cosx-x=0 </h6><p><img src="/images/pasted-38.png" alt="upload successful"></p><h6 align="center"> x<sup>12</sup>-1=0 </h6><p><img src="/images/pasted-39.png" alt="upload successful"></p><p>值得注意的是，这里的比例求根似乎不能发挥他的功能，迭代了越4000次才收敛，由于没有论证比例求根法的原理，故不做说明。      </p><p>由此，交叉法求根完结。</p><p></p><h4 align="left"> 2、迭代法求根 </h4><br>除了使用缩小区间的方式外，是否有其他方法求根？答案是肯定的，这就是迭代法。迭代法的思想在牛顿的那个时代早已提出，思想大概是这样的：先在要求根的附近取一点，然后根据这一点或相近两点的“陡峭程度”确定根的方向，并相对应地移向那里（是不是感觉和梯度下降很像？）。这里介绍两种方法。<p></p><p></p><h6 align="left"> Ⅰ、牛顿法 </h6><br>牛顿法的原理与泰勒展开式有关[2]，这里不再赘述，我们主要阐述其公式含义：<p></p><p><img src="/images/pasted-40.png" alt="upload successful">    </p><p>这个式子由选定点处的切线引出，与x轴相交后选定该点作为新点，之后的x由前一个x更新，直到f’(x)（选定点的切线斜率）趋于0后，右式后一项趋于无穷大，左式趋于0，精度达到要求后，迭代完毕。可能有点难理解，这里有找y=x<sup>2</sup>零点（x=0）的部分迭代图：</p><p><img src="/images/pasted-41.png" alt="upload successful"></p><pre><code>   步骤一：选定点(5,25)，做切线与x轴交于x=2.5处。 </code></pre><p><img src="/images/pasted-42.png" alt="upload successful"></p><pre><code>   步骤二：选定点(2.5,6.25)，做切线与x轴交于下一个点处，以此循环，直到斜率趋向0。</code></pre><p>这里的例子与之后的方法合起来进行对比，同样的，你可以在附录③与附录④中找到代码。</p><p></p><h6 align="left"> Ⅱ、弦截法 </h6><br>弦截法其实和牛顿法十分相像，只是弦截法是利用两个点做出一条直线与x轴相交，而牛顿法只使用一个点的切线作为直线，故选取点时要使用两个点（这一点老师在上课时与百度百科[3]中说的不太一样，百科中认为两个点围成的区间必须包括根，而课上所展示的PPT没有此意，故程序中均选取了十分相近的两点），弦截法迭代公式如下：<p></p><p><img src="/images/pasted-43.png" alt="upload successful"></p><pre><code> 应该注意到，我们必须迭代三个值而不是牛顿法中的两个</code></pre><p>下相对误差图用于比较牛顿法与弦截法：</p><p><img src="/images/pasted-44.png" alt="upload successful"></p><h3 align="left"> 参考文献 </h3><p>[1]同济大学数学系.高等数学[M].北京:高等教育出版社,2014:68-69.</p><p>[2]Pikachu5808.牛顿法和拟牛顿法[DB/OL].<a href="https://zhuanlan.zhihu.com/p/46536960,2020" target="_blank" rel="noopener">https://zhuanlan.zhihu.com/p/46536960,2020</a></p><p>[3]弦截法_百度百科[DB/OL].<a href="https://baike.baidu.com/item/%E5%BC%A6%E6%88%AA%E6%B3%95/1195626?fr=aladdin" target="_blank" rel="noopener">https://baike.baidu.com/item/%E5%BC%A6%E6%88%AA%E6%B3%95/1195626?fr=aladdin</a></p><h3 align="left"> 附录 </h3><p><a href="/download/bisection.m&quot;">附录①：二分法实例-x<sup>12</sup>-1=0</a></p><p><a href="/download/proportion.m&quot;">附录②：比例求根法实例-cosx-x=0</a></p><p><a href="/download/proportion1.m&quot;">附录③：比例求根法实例-x<sup>12</sup>-1=0</a></p><p><a href="/download/Newton_Raphson.m&quot;">附录④：牛顿法求根</a></p><p><a href="/download/Secant.m&quot;">附录⑤：弦截法求根</a></p>]]></content>
+    
+    <summary type="html">
+    
+      &lt;h6 align=&quot;right&quot;&gt; 作者：村山羊 &lt;/h6&gt;
+本文针对数值计算求根方法做出matlab的编程实现，并给出效果图和相对误差分析图（又可以水一篇博客了233）。
+    
+    </summary>
+    
+    
+      <category term="数学建模" scheme="https://cunsy192.github.io/categories/%E6%95%B0%E5%AD%A6%E5%BB%BA%E6%A8%A1/"/>
+    
+    
+      <category term="matlab" scheme="https://cunsy192.github.io/tags/matlab/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>像怨妇一样发牢骚</title>
+    <link href="https://cunsy192.github.io/2020/06/23/%E5%83%8F%E6%80%A8%E5%A6%87%E4%B8%80%E6%A0%B7%E5%8F%91%E7%89%A2%E9%AA%9A/"/>
+    <id>https://cunsy192.github.io/2020/06/23/%E5%83%8F%E6%80%A8%E5%A6%87%E4%B8%80%E6%A0%B7%E5%8F%91%E7%89%A2%E9%AA%9A/</id>
+    <published>2020-06-23T03:14:00.000Z</published>
+    <updated>2020-09-27T10:11:29.193Z</updated>
+    
+    <content type="html"><![CDATA[<div id="hexo-blog-encrypt" data-wpm="抱歉, 这个密码看着不太对, 请再试试." data-whm="OOPS, these decrypted content may changed, but you can still have a look.">  <div class="hbe-input-container">  <input type="password" id="hbePass" placeholder="" />    <label for="hbePass">您好, 这里需要密码.</label>    <div class="bottom-line"></div>  </div>  <script id="hbeData" type="hbeData" data-hmacdigest="0d8df3b61a5a50479a18010907106ea2532c2cee9d1da5fc2d9676e047fd89c4">d941ae1b9fc5e4743c5eff1087fc75a5d8526016435ae1fc67ed887519131ee2f96f8388917f808191bfa0b208de638bc513f5a2eb7277af06848846424b98ec11bb6ab792802f66c3684c9b4da1c0dd8062c1bface718fb8869e6af65da3340714b06314d749e5f6bb5364b7c6a56bbdb3edb6da98b5877302936a22cdce343275bf6fe174a4af3240e390e351e27afdeb0e8b8f764b6128594641d3845d2091078941e317a207f5010425e80e071eb4e83f61367fa74690f72bc9dcaa019ce0a4f05463edb44f1702d8f28f598529bd8c1058032b2bbd8d0caa3eb4c4d5536dcd8a518bfd48e4986fdd1d9a26abb93535861e7b7c8a385d361e2a2461a5185c08f43cbb9b1fc431bbce1a6384de313cb3da7725503e739cb2fc70e0cc72017782f9fcbef45cbc1228243b33f0c7f99bae283728911441a8214ed9de53ecd31e86fcd36b8f64a0d5f3b8247d2462a92fdb9e45e6832baeee875cf2772b11816aa2036aee3c1d5d96a7d983f6dec1f47b29d2f1ea5250ae76f97a215a86e79cede105ae0310b356da2e5794533e1cd53f84002454e97a11eec86406da0df4e3bb41158aee67b31a73af39eba5128c4bb3f7ca9b757cec6e6192f77d70f4b94a62ca59df8fc6486c49e4e94e1761de5c654956660ea30d3f358dafb58740cce297dae94f1b470f302252eac678b259f3ba12e1c1ed3c708bb217e8c26e1b4acb721edb40e21d552fad37e23acf23b9ef0b3ea72dbd2e75fde6bc447ff716c45d9</script></div><script src="/lib/blog-encrypt.js"></script><link href="/css/blog-encrypt.css" rel="stylesheet" type="text/css">]]></content>
+    
+    <summary type="html">
+    
+      哦，真是糟糕，这篇文章查看需要输入密码，但您可以试试用我高三时的班级号加上座位号试试运气
+    
+    </summary>
+    
+    
+      <category term="杂谈" scheme="https://cunsy192.github.io/categories/%E6%9D%82%E8%B0%88/"/>
+    
+    
+  </entry>
+  
+  <entry>
+    <title>记一次日偏食</title>
+    <link href="https://cunsy192.github.io/2020/06/21/%E8%AE%B0%E4%B8%80%E6%AC%A1%E6%97%A5%E5%81%8F%E9%A3%9F/"/>
+    <id>https://cunsy192.github.io/2020/06/21/%E8%AE%B0%E4%B8%80%E6%AC%A1%E6%97%A5%E5%81%8F%E9%A3%9F/</id>
+    <published>2020-06-21T08:54:00.000Z</published>
+    <updated>2020-09-27T10:21:32.993Z</updated>
+    
+    <content type="html"><![CDATA[<p>2020年6月21日，夏至，父亲节，我省出现日环食现象。<br><a id="more"></a><br>当然，我县看到的是日偏食，全亏的时候我还在剪头发，未能拍下，可惜。<br>不过还是拍到了中后期的图片，放出以纪念这个特殊的日子。</p><p><img src="/images/pasted-32.png" alt="upload successful"></p>]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;2020年6月21日，夏至，父亲节，我省出现日环食现象。&lt;br&gt;&lt;/p&gt;
+    
+    </summary>
+    
+    
+      <category term="远方的日记" scheme="https://cunsy192.github.io/categories/%E8%BF%9C%E6%96%B9%E7%9A%84%E6%97%A5%E8%AE%B0/"/>
+    
+    
+      <category term="单反摄影" scheme="https://cunsy192.github.io/tags/%E5%8D%95%E5%8F%8D%E6%91%84%E5%BD%B1/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>数模和高考这档子事</title>
+    <link href="https://cunsy192.github.io/2020/06/08/%E6%95%B0%E6%A8%A1%E8%BF%99%E6%A1%A3%E5%AD%90%E4%BA%8B/"/>
+    <id>https://cunsy192.github.io/2020/06/08/%E6%95%B0%E6%A8%A1%E8%BF%99%E6%A1%A3%E5%AD%90%E4%BA%8B/</id>
+    <published>2020-06-08T08:50:00.000Z</published>
+    <updated>2020-09-26T19:29:17.928Z</updated>
+    
+    <content type="html"><![CDATA[<p>下午2点睡的觉，再睁开眼已经4点。<br><a id="more"></a><br>队友群里传来消息，说是成绩出了，看了下校二等奖。<br>不是很牛逼的成绩，但是第一次做还是有些成就感的。<br>不过成就感这话和泡哥说可能更加合适，这是一个可敬的男人：3天rush建模coding论文一条龙，5月3日拿到5000字论文的我和队友的手微微颤抖。</p><pre><code> 燊樣の侽仁：泡桑</code></pre><p>结果已定，想起那时思考论文结构和通宵（主要是补作业，线代我死了哭哭）的感觉，还是有种恍惚感。<br>说起来，现在是6月8日下午5点，去年这个时候，英语差不多考完了吧，我记得那天出来买了瓶芬达喝，现在想来有点酸。<br>为什么酸呢？说不上来。<br>之后的饭局、KTV和报考，仿佛昨日乍现，当真是：</p><pre><code> 一切有为法,如梦幻泡影。 如露亦如电,应作如是观。</code></pre><p>应作如是观，几人能做到？<br>俯仰之间，已为陈迹，<br>而兰亭已矣，梓泽丘墟，<br>今日抒怀，又是几番春秋？<br>遥想高考结束那时的夏天，<br>高山上的萤火虫，配着漫天星河，背靠漠白坟冢，生命、宏大、微小聚集于此，我拍下照片，似置身世外一般。</p><pre><code>  无垠的星辰，微分了有限</code></pre><p>红警开源重置了，但是红警2的源码丢了，希望有生之年能看见红警2重置版吧。<br>我记得里面有个任务，叫做“好莱坞，梦一场”，名字真是妙。<br>果然，摄影能让人怀念造梦和怀梦的时光。<br>最后贴两张我拍的星空图，以怀念这高中的时光。</p><p><img src="/images/pasted-28.png" alt="upload successful"></p><p><img src="/images/pasted-31.png" alt="upload successful"></p>]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;下午2点睡的觉，再睁开眼已经4点。&lt;br&gt;&lt;/p&gt;
+    
+    </summary>
+    
+    
+      <category term="数学建模" scheme="https://cunsy192.github.io/categories/%E6%95%B0%E5%AD%A6%E5%BB%BA%E6%A8%A1/"/>
+    
+      <category term="杂谈" scheme="https://cunsy192.github.io/categories/%E6%95%B0%E5%AD%A6%E5%BB%BA%E6%A8%A1/%E6%9D%82%E8%B0%88/"/>
+    
+    
+  </entry>
+  
+  <entry>
+    <title>装Tensorflow的辛酸史——安装&amp;杂谈</title>
+    <link href="https://cunsy192.github.io/2020/06/03/%E8%A3%85Tensorflow%E7%9A%84%E8%BE%9B%E9%85%B8%E5%8F%B2/"/>
+    <id>https://cunsy192.github.io/2020/06/03/%E8%A3%85Tensorflow%E7%9A%84%E8%BE%9B%E9%85%B8%E5%8F%B2/</id>
+    <published>2020-06-03T14:34:00.000Z</published>
+    <updated>2020-09-29T16:33:50.612Z</updated>
+    
+    <content type="html"><![CDATA[<p>我动笔写这篇文章的时候是6月3日晚上22：37分，在此之前的5个小时中，我一直处于受苦当中——当然不是像地狱一样无穷无尽的痛苦，亦不是雄鹰啄食普罗米修斯肝脏的苦痛——我最后还是装上了Tensorflow，除了结尾函数返回True的惊喜之外，是一种如见到古神般深深的不可名状的恐惧（愿长眠的克苏鲁候汝入眠，希望拉莱耶的宅邸光芒永存）。<br><a id="more"></a><br>这里是我san值没有清零前的琐碎话语：这次装Tensorflow本来想借助B站的力量，于是找到了莫烦python这位up来学习，然后看着看着就不由自主地翻到了评论，只见硕大的（这是夸张的说法，额，应该吧）url展现在眼前，下书由规范电脑字组成的一句话：“只要有手就能安装”。</p><p>好家伙，我现在想起来真得谢谢他。</p><p>于是我进入了该CSDN教程，在午觉后开始了惊心动魄的旅程。教程地址按老规矩放在文末①，以供查阅。</p><p>前面万事如意，不过在安装Tensorflow这一步出现了第一个错误，即无法使用ssl模块安装Tensorflow库，查了半天，大部分人员秉着热情好客的原则和对于ctrl+C和ctrl+v的迷恋与执着，告诉我要改ssl权限，后终于发现了正解②：在官网安装openssl（我现在严重怀疑是当时装python时没有选web功能导致的），然后安装，遂解。</p><p><img src="/images/pasted-26.png" alt="upload successful"></p><p>（贴张下载图来表示我激动的心情）</p><p>然后一路顺风，终于到了验证tensorflow能不能用的时刻，按命令，进入ipython，输入：</p><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> tensorflow <span class="keyword">as</span> tf</span><br></pre></td></tr></table></figure><p>豁，好家伙，这字体还会变色，大概就成了。不出意料地成功了。（小道消息：某知乎网友说这行代码在巴菲特看来值一个亿，当然这和让黄油和猫绑在一起做成永动机的真实姓差不多）</p><p>然后，在使用函数<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">tf.test.is_gpu_available()</span><br></pre></td></tr></table></figure><br>时出了问题，主要表现为前几个信息都对，最后忽然给了个F，网上说是GPU的问题，又是添加路径又是重新下载驱动，最后发现了这篇文章③，说是要更新驱动。</p><p>于是我点开了nvidia的驱动界面，发现真的有更新可以使用。这时候，我犹豫了。</p><p>经历过ubuntu那与英伟达显卡不兼容的惨剧后，我只想好好说一句：”AMD,YES!”</p><p>不过想了一想自己的机会成本，还是按下了“快速安装”的按钮</p><button>快速安装</button><p>对，上面的这个按钮完全没有作用，他只是在我并不漫长的web前端中一个近乎失败的例子罢了（哭哭），我主要是为了表现一种快要成佛的心态。</p><p>就在这时，他报了错：“其他安装程序正在运行，安装失败”。</p><p>还好重启后恢复了正常，人生也像这样起起落落吧，习惯了。</p><p>最后安装完毕，我打开了cmd命令行，抱着必输的信念说到：“再不成功就不干了！”</p><p>在这时我按下了回车。<br><figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">In</span> [<span class="number">2</span>]: tf.test.is_gpu_available()</span><br><span class="line">Successfully opened dynamic library cudart64_101.dll</span><br><span class="line">Successfully opened dynamic library cublas64_10.dll</span><br><span class="line">Successfully opened dynamic library cufft64_10.dll</span><br><span class="line">Successfully opened dynamic library curand64_10.dll</span><br><span class="line">Successfully opened dynamic library cusolver64_10.dll</span><br><span class="line">Successfully opened dynamic library cusparse64_10.dll</span><br><span class="line">Successfully opened dynamic library cudnn64_7.dll</span><br><span class="line">Adding visible gpu devices: <span class="number">0</span></span><br><span class="line">Device interconnect StreamExecutor with strength <span class="number">1</span> edge matrix:</span><br><span class="line">     <span class="number">0</span></span><br><span class="line"><span class="number">0</span>:   N</span><br><span class="line"><span class="function">GPU:0 <span class="title">with</span> 4702 <span class="title">MB</span> <span class="title">memory</span>) -&gt; <span class="title">physical</span> <span class="title">GPU</span></span></span><br></pre></td></tr></table></figure></p><p>最后，在我大脑开始搜索结果之前，出现了这么一句话，</p><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Out[<span class="number">2</span>]: <span class="literal">True</span></span><br></pre></td></tr></table></figure><p>返回值为真。那一刻，除了欢呼，伴随着一种与世隔绝的恍惚感，如黄昏的光线找到了晨曦，如夜半的繁星看见了日出，如那一位学子心心念念的jvav，和清华的雷课堂。</p><p>Tensorflow库安装成功，接下来会使用其对之前所学和之后所学的机器学习内容进行python上的重写和改进。</p><p>文末链接：</p><p>①<a href="https://blog.csdn.net/weixin_44170512/article/details/103990592" target="_blank" rel="noopener">Tensorflow安装教程</a></p><p>②<a href="https://blog.csdn.net/m0_37872216/article/details/103121248?utm_medium=distribute.pc_relevant.none-task-blog-BlogCommendFromMachineLearnPai2-1.nonecase&depth_1-utm_source=distribute.pc_relevant.none-task-blog-BlogCommendFromMachineLearnPai2-1.nonecase" target="_blank" rel="noopener">解决win10“ssl module in Python is not available”与国内镜像源加速</a></p><p>③<a href="https://www.cnblogs.com/ziyu-trip/p/12663978.html" target="_blank" rel="noopener">解决GPU问题（需操作后更新驱动）</a></p>]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;我动笔写这篇文章的时候是6月3日晚上22：37分，在此之前的5个小时中，我一直处于受苦当中——当然不是像地狱一样无穷无尽的痛苦，亦不是雄鹰啄食普罗米修斯肝脏的苦痛——我最后还是装上了Tensorflow，除了结尾函数返回True的惊喜之外，是一种如见到古神般深深的不可名状的恐惧（愿长眠的克苏鲁候汝入眠，希望拉莱耶的宅邸光芒永存）。&lt;br&gt;&lt;/p&gt;
+    
+    </summary>
+    
+    
+      <category term="杂谈" scheme="https://cunsy192.github.io/categories/%E6%9D%82%E8%B0%88/"/>
+    
+    
+      <category term="机器学习" scheme="https://cunsy192.github.io/tags/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/"/>
+    
+      <category term="安装" scheme="https://cunsy192.github.io/tags/%E5%AE%89%E8%A3%85/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>逻辑回归——预告</title>
+    <link href="https://cunsy192.github.io/2020/06/02/%E9%80%BB%E8%BE%91%E5%9B%9E%E5%BD%92/"/>
+    <id>https://cunsy192.github.io/2020/06/02/%E9%80%BB%E8%BE%91%E5%9B%9E%E5%BD%92/</id>
+    <published>2020-06-02T15:05:00.000Z</published>
+    <updated>2020-09-27T10:22:53.494Z</updated>
+    
+    <content type="html"><![CDATA[<p>在这篇文章中，我将分析逻辑回归的数学原理和数学模型，<br><a id="more"></a><br>并针对模型应用计算机语言编写相应的框架，最后对实例<br>进行分析。当所有的工作准备完成时，我将删除这段话，<br>以正式的博客内容取代。（不过真的有人看嘛hhh）</p><p>8.26更新<br>Wow，you can really gugu!<br>这篇文章不删了，我就是要向全世界展示鸽子的实力。</p>]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;在这篇文章中，我将分析逻辑回归的数学原理和数学模型，&lt;br&gt;&lt;/p&gt;
+    
+    </summary>
+    
+    
+      <category term="机器学习" scheme="https://cunsy192.github.io/categories/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/"/>
+    
+    
+  </entry>
+  
+  <entry>
+    <title>机器学习模型：线性回归（多元）</title>
+    <link href="https://cunsy192.github.io/2020/05/31/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E6%A8%A1%E5%9E%8B%EF%BC%9A%E7%BA%BF%E6%80%A7%E5%9B%9E%E5%BD%92%EF%BC%88%E5%A4%9A%E5%85%83%EF%BC%89/"/>
+    <id>https://cunsy192.github.io/2020/05/31/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E6%A8%A1%E5%9E%8B%EF%BC%9A%E7%BA%BF%E6%80%A7%E5%9B%9E%E5%BD%92%EF%BC%88%E5%A4%9A%E5%85%83%EF%BC%89/</id>
+    <published>2020-05-31T04:11:00.000Z</published>
+    <updated>2020-09-27T10:27:46.514Z</updated>
+    
+    <content type="html"><![CDATA[<p>在上篇文章中，我分析了一元线性回归的可行性与应用实例。</p><p>在这篇文章中，我将对一元线性回归的模型进行扩展，从而实现多元线性回归模型。<br><a id="more"></a><br>从matlab中线性回归核心代码：<br><figure class="highlight matlab"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> <span class="built_in">i</span> = <span class="number">1</span>:k,</span><br><span class="line">        A(<span class="built_in">i</span>) = (<span class="number">1</span>/m)*sum((x*theta-y).*x(:,<span class="built_in">i</span>));</span><br><span class="line"><span class="keyword">end</span></span><br></pre></td></tr></table></figure></p><p>看出，A的本质是一个行数与θ(j)个数相同，列数为1的向量，该向量与学习速率相乘后被相应的θ相减从而被迭代，可以预见：A的大小与x的大小无关，故可以扩展x的元数，形成多元的线性回归算法。</p><p>以下是模型要点：</p><p>①注意原始数据与矩阵数据的不同：因为多元函数有一项为常数，进行矩阵乘法时，需要对x(n×m)的左侧进行增扩一个n×1的列向量，形成的x1为n×(m+1)，如下图：</p><p><img src="/images/pasted-21.png" alt="upload successful"></p><pre><code>                         （原始数据集，导出为414×6的矩阵）</code></pre><p><img src="/images/pasted-22.png" alt="upload successful"></p><pre><code>                            （左侧增扩，形成414×7的矩阵）  </code></pre><p>②由于数据的不同性，学习速率必须做出相应的调整，以上的数据用学习速率为0.00000001经过迭代10000次后收敛，故将学习速率α（matlab中为a）单独做一个变量</p><p>③增扩矩阵与原始矩阵间必须有如①的对应关系，但是如果直接改变原始矩阵的列数，则下次重新运行程序时会将矩阵左侧再加一个列向量，导致运行失败，故一定要有一个矩阵（此处称为x1）继承并对应增扩矩阵。</p><p>④变量初始化问题：θ列向量在开始时应该设为0向量，以便后续操作，有语句：</p><figure class="highlight matlab"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">theta = <span class="built_in">zeros</span>(<span class="built_in">size</span>(x1,<span class="number">2</span>),<span class="number">1</span>);</span><br></pre></td></tr></table></figure><p>将θ设为0向量。</p><p>⑤迭代次数与学习速率：由于数据的特异性，需要对每一个具体分析的数据集调整不同的迭代次数（iterations）和学习速率(a)，测试后函数不再发散即可。</p><p>测试案例（数据来自kaggle）：<br><a href="/download/datasets_88705_204267_Real estate.csv&quot;">Real estate</a></p><p>工作区数据（运行后）：</p><p><img src="/images/pasted-23.png" alt="upload successful"></p><p>结果（a=0.00000001,iterations = 10000时）：</p><p><img src="/images/pasted-24.png" alt="upload successful"></p><p>测试样例正确性代码（取x1的某一行与θ相乘得到y1，看每一个y1结果是否与y近似）<br>：</p><figure class="highlight matlab"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> k = <span class="number">1</span>:<span class="number">414</span>,</span><br><span class="line">    y1(k) = x1(k,:)*theta;</span><br><span class="line"><span class="keyword">end</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> <span class="built_in">j</span> = <span class="number">1</span>:<span class="number">414</span>,</span><br><span class="line">    <span class="built_in">i</span>(<span class="built_in">j</span>) = <span class="built_in">j</span>;</span><br><span class="line"><span class="keyword">end</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">plot</span>(<span class="built_in">i</span>,y1,<span class="string">"."</span>);</span><br><span class="line"><span class="built_in">hold</span> on;</span><br><span class="line"><span class="built_in">plot</span>(<span class="built_in">i</span>,y',<span class="string">"."</span>);</span><br></pre></td></tr></table></figure><p>由此，得到散点图：</p><p><img src="/images/pasted-25.png" alt="upload successful"></p><p>（蓝色部分为拟合的y1，红色部分为原始数据y）<br>易见，拟合情况较好（不过由于该数据点分部较为分散，有较多y未能很好拟合）</p><p>最后，附上代码实例：</p><p><a href="/download/test1.m&quot;">多元线性回归模型代码</a></p>]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;在上篇文章中，我分析了一元线性回归的可行性与应用实例。&lt;/p&gt;
+&lt;p&gt;在这篇文章中，我将对一元线性回归的模型进行扩展，从而实现多元线性回归模型。&lt;br&gt;&lt;/p&gt;
+    
+    </summary>
+    
+    
+      <category term="我与AI" scheme="https://cunsy192.github.io/categories/%E6%88%91%E4%B8%8EAI/"/>
+    
+    
+      <category term="机器学习" scheme="https://cunsy192.github.io/tags/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/"/>
+    
+      <category term="matlab" scheme="https://cunsy192.github.io/tags/matlab/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>机器学习模型：线性回归（一元）</title>
+    <link href="https://cunsy192.github.io/2020/05/30/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E6%A8%A1%E5%9E%8B%EF%BC%9A%E7%BA%BF%E6%80%A7%E5%9B%9E%E5%BD%92/"/>
+    <id>https://cunsy192.github.io/2020/05/30/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E6%A8%A1%E5%9E%8B%EF%BC%9A%E7%BA%BF%E6%80%A7%E5%9B%9E%E5%BD%92/</id>
+    <published>2020-05-30T15:52:00.000Z</published>
+    <updated>2020-09-27T10:28:55.134Z</updated>
+    
+    <content type="html"><![CDATA[<p>本文将从高度数学与线性代数角度来阐述线性回归算法的可执行性，并给出完整实例(matlab编写)。<br><a id="more"></a><br>这里是声明部分：本文章使用markdown语法编写，因为不懂如何插入公式，故使用英译法表示希腊字母，矩阵元素以中国规定的行列表示法表示。</p><p>Part Ⅰ<br>代价函数</p><p>高中的伟大导师蒋（以下简称jml）曾经讲过初级的误差估计（一元函数），在高等数学中<br>我们将对误差估计做出更加精确化的描述（虽然我高中数学非常菜）。</p><p>假设有一组数据集，分别用x和y表示横纵坐标，那么在坐标轴上可以得到一组离散的坐标点：</p><p><img src="/images/pasted-9.png" alt="upload successful">  </p><pre><code>                                 （图片来自于百度）</code></pre><p> 要拟合这些点，也就是得到所谓得“拟合函数”，我们需要两个参数，这里称作theta1和<br> theta2，也就是jml在高中所说的y=kx+b中的b与k。</p><p> 我们先不考虑如何得到这两个参数，先考虑拟合情况好不好，那么，需要一个函数来判定拟合情况，这个函数在高中有接触过，就是把拟合函数在x处的y’与原本的y作差后平方，接着对每一个算出每一个y’,求和，然后再除以2倍的样本值（至于为什么是2倍的样本值，这是因为之后要讲的梯度下降需要对每一个变量求偏导）</p><p>如果具体到公式，以h表示拟合函数，那么：</p><p><img src="/images/pasted-10.png" alt="upload successful"></p><p>代价函数J为：</p><p><img src="/images/pasted-11.png" alt="upload successful"></p><p>此时要想知道拟合情况，只要看J函数的值与0的距离，离0越近，拟合越好。<br>用matlab表示该函数，即</p><figure class="highlight matlab"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">J</span> = <span class="title">Jcost</span><span class="params">(X,y,theta)</span></span></span><br><span class="line">m = <span class="built_in">size</span>(X,<span class="number">1</span>); <span class="comment">%计算样本个数</span></span><br><span class="line">predictions = X*theta; <span class="comment">%计算预测值</span></span><br><span class="line">sqrErrors = (predictions - y).^<span class="number">2</span>; <span class="comment">%计算误差</span></span><br><span class="line">J = <span class="number">1</span>/(<span class="number">2</span>*m) * sum(sqrErrors); <span class="comment">%计算损失</span></span><br></pre></td></tr></table></figure><p>测试，得到的结果正确。</p><p> Part Ⅱ<br> 梯度下降</p><p> 现在我们知道如何量化表示拟合函数的拟合情况，但是重要的问题还是没有解决，即如何求出拟合函数。在吴恩达的课程中提供了两种方法，这两种方法均会介绍，但我们着重讲述第二种方法，即梯度下降法。</p><p> ①超定线性方程组与最小二乘解</p><p> 考虑一个方程组(Ax=b)，它由n个未知数组成，却有大于等于n个的方程，这样的方程组称为超定线性方程组。这种方程组经过数学推导（从略）后可以得到以下的式子：</p><p><img src="/images/pasted-12.png" alt="upload successful"></p><p>x就为Ax=b的最小二乘解。原方程组可能无解，向量x的各项带入方程组，使得与方程组中各方程的解最接近（也就是误差最小），这时的解称为最小二乘解。</p><p>②梯度下降法<br>同济高等数学在偏微分一章讲过了梯度下降法的具体内容，按百度百科所说，<br>“梯度下降是迭代法的一种,可以用于求解最小二乘问题。”</p><p>我们知道，代价函数J拥有它的最小解，这个解不一定能用数学方式表达出来，而数学家想出了一种办法，可以有效地让代价函数收敛到它的极小值（不是最小值，所以梯度下降法具有不可避免的误差），具体如下：</p><p>一、初始化变量</p><p>二、对函数J求一个变量的偏导（这里与之前的1/2m呼应，因为求导后平方项会多出一个2，刚好消去，同时，此步是为了求出在初始化条件下在某一点函数的切线，不过我偏导的几何没有弄清，有说错的地方请指正）</p><p>三、给予J的偏导一个速率α,这是为了让J的偏导能向该方向“迈开步子”，“步子”决定了J的收敛时间与收敛区域（α过小，则收敛时间越长；α越大，则收敛区域越大，甚至可能不收敛）</p><p>四、将对J求偏导的那个变量减去α×J’，得到新的变量（这一步称为对变量的一次迭代）</p><p>五、对其他的变量做上述的变化一到四，当所有的变量均完成后一个循环结束，进入下一个循环</p><p>六、迭代多次后，得到最小二乘（或近似）解</p><p>一元的梯度下降公式如下：</p><p><img src="/images/pasted-13.png" alt="upload successful"></p><pre><code>                          （来自吴恩达：机器学习，网易公开课）</code></pre><p>PartⅢ<br>线性回归模型<br>现在你已经了解了梯度下降的原理，可以结合线性代数的知识来统一模型并加以应用。我从Kaggle上下载了一个二元数据集（300个数据对），他差不多长这样：</p><p><img src="/images/pasted-14.png" alt="upload successful"></p><p>图中的数据有经过升序排列，与原数据不太一样。</p><p>如何利用已有的模型编程解决这些数据的拟合？经过吴老师的启发，我们把二元参数（即θ1、θ2）看作一个列向量θ=[θ1;θ2]，（注意，θ’表示为θ的转置）把上图中的x与y分离，成为两个单独的列向量，同时将x的左侧扩充一个列向量，成为如下样子：</p><p><img src="/images/pasted-15.png" alt="upload successful"></p><p>这样，当我们算(θ’<em>x’)’-y（化简得x</em>θ-y）时就是算出了残差，带入梯度下降公式同时可以得到（以下部分有经过化简与改良，比较难理解）：</p><figure class="highlight matlab"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> <span class="built_in">i</span> = <span class="number">1</span>:k,</span><br><span class="line">    A(<span class="built_in">i</span>) = (<span class="number">1</span>/m)*sum((x*theta-y).*x(:,<span class="built_in">i</span>));</span><br><span class="line"><span class="keyword">end</span></span><br></pre></td></tr></table></figure><p>这里的A表示一个2×1的行向量，k为θ的列数（即为2），m为数据对数（这里为300对），sum()为求和函数，而sum函数中的式子表示：</p><p><img src="/images/pasted-16.png" alt="upload successful"></p><p>x(i)0为x矩阵中第1列第i行的元素（全为1）；<br>x(i)1为x矩阵中第2列第i行的元素（为0 0 0 1 ……）。<br>这样，我们就得到了模型的核心算法，接下来就是迭代了，代码略。</p><p>你可能会发现该模型不仅适合于二元线性回归模型，扩充参数矩阵后仍然适用，但那要等到我下一次更新了。</p><p>最后，放出点的离散图与回归过程与回归结果图：</p><p><img src="/images/pasted-17.png" alt="upload successful"></p><pre><code>                                 （数据集的离散图）</code></pre><p><img src="/images/pasted-19.png" alt="upload successful"></p><pre><code>       （迭代次数为1000时得到的线性回归图（方向由水平直线向散点图偏移））</code></pre><p><img src="/images/pasted-20.png" alt="upload successful"></p><pre><code>                         （最终的线性回归图，线比较小容易忽视）</code></pre><p>附上有关数据与程序下载链接：</p><p> <a href="/download/Jcost.m&quot;">代价函数</a></p><p> <a href="/download/test.csv&quot;">数据集</a></p><p> <a href="/download/test.m&quot;">一元线性回归主函数</a></p>]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;本文将从高度数学与线性代数角度来阐述线性回归算法的可执行性，并给出完整实例(matlab编写)。&lt;br&gt;&lt;/p&gt;
+    
+    </summary>
+    
+    
+      <category term="我与AI" scheme="https://cunsy192.github.io/categories/%E6%88%91%E4%B8%8EAI/"/>
+    
+    
+      <category term="机器学习" scheme="https://cunsy192.github.io/tags/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/"/>
+    
+      <category term="matlab" scheme="https://cunsy192.github.io/tags/matlab/"/>
+    
+  </entry>
+  
+</feed>
