@@ -1,0 +1,848 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="C语言," />
+
+
+
+
+  
+
+
+  <link rel="alternate" href="/atom.xml" title="村山羊的博客" type="application/atom+xml" />
+
+
+
+
+
+
+<meta name="description" content="本文将简单阐述利用C语言单项循环链表所写的图书管理系统，并在文末附上代码。一、系统可实现功能  该系统由两部分子系统组成，分别为学生系统与管理系统。  Ⅰ.学生系统  该部分可以实现的功能有：查找图书、借阅图书、归还图书、显示图书表。  Ⅱ.管理系统  该部分可以实现的功能有：插入图书、删除图书、显示图书表、查找图书、统计信息。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="基于C语言单向循环链表的图书管理系统">
+<meta property="og:url" content="https://cunsy192.github.io/2020/09/23/%E5%9F%BA%E4%BA%8EC%E8%AF%AD%E8%A8%80%E5%8D%95%E5%90%91%E5%BE%AA%E7%8E%AF%E9%93%BE%E8%A1%A8%E7%9A%84%E5%9B%BE%E4%B9%A6%E7%AE%A1%E7%90%86%E7%B3%BB%E7%BB%9F/index.html">
+<meta property="og:site_name" content="村山羊的博客">
+<meta property="og:description" content="本文将简单阐述利用C语言单项循环链表所写的图书管理系统，并在文末附上代码。一、系统可实现功能  该系统由两部分子系统组成，分别为学生系统与管理系统。  Ⅰ.学生系统  该部分可以实现的功能有：查找图书、借阅图书、归还图书、显示图书表。  Ⅱ.管理系统  该部分可以实现的功能有：插入图书、删除图书、显示图书表、查找图书、统计信息。">
+<meta property="og:image" content="https://cunsy192.github.io/images/pasted-46.png">
+<meta property="og:image" content="https://cunsy192.github.io/images/pasted-47.png">
+<meta property="og:image" content="https://cunsy192.github.io/images/pasted-48.png">
+<meta property="og:image" content="https://cunsy192.github.io/images/pasted-49.png">
+<meta property="og:image" content="https://cunsy192.github.io/images/pasted-50.png">
+<meta property="og:image" content="https://cunsy192.github.io/images/pasted-51.png">
+<meta property="article:published_time" content="2020-09-23T03:14:00.000Z">
+<meta property="article:modified_time" content="2020-09-26T19:30:47.453Z">
+<meta property="article:tag" content="C语言">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://cunsy192.github.io/images/pasted-46.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"always","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://cunsy192.github.io/2020/09/23/基于C语言单向循环链表的图书管理系统/"/>
+
+
+
+
+
+  <title>基于C语言单向循环链表的图书管理系统 | 村山羊的博客</title>
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?c7b7d45a314b528e63ec65f93375707c";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+  
+
+  
+<meta name="generator" content="Hexo 4.2.0"></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">村山羊的博客</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">追随属于你的星星</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://cunsy192.github.io/2020/09/23/%E5%9F%BA%E4%BA%8EC%E8%AF%AD%E8%A8%80%E5%8D%95%E5%90%91%E5%BE%AA%E7%8E%AF%E9%93%BE%E8%A1%A8%E7%9A%84%E5%9B%BE%E4%B9%A6%E7%AE%A1%E7%90%86%E7%B3%BB%E7%BB%9F/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="村山羊的博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">基于C语言单向循环链表的图书管理系统</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-09-23T11:14:00+08:00">
+                2020-09-23
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E9%A1%B9%E7%9B%AE/" itemprop="url" rel="index">
+                    <span itemprop="name">项目</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2020/09/23/%E5%9F%BA%E4%BA%8EC%E8%AF%AD%E8%A8%80%E5%8D%95%E5%90%91%E5%BE%AA%E7%8E%AF%E9%93%BE%E8%A1%A8%E7%9A%84%E5%9B%BE%E4%B9%A6%E7%AE%A1%E7%90%86%E7%B3%BB%E7%BB%9F/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2020/09/23/%E5%9F%BA%E4%BA%8EC%E8%AF%AD%E8%A8%80%E5%8D%95%E5%90%91%E5%BE%AA%E7%8E%AF%E9%93%BE%E8%A1%A8%E7%9A%84%E5%9B%BE%E4%B9%A6%E7%AE%A1%E7%90%86%E7%B3%BB%E7%BB%9F/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>本文将简单阐述利用C语言单项循环链表所写的图书管理系统，并在文末附上代码。<br>一、系统可实现功能<br>  该系统由两部分子系统组成，分别为学生系统与管理系统。<br>  Ⅰ.学生系统<br>  该部分可以实现的功能有：查找图书、借阅图书、归还图书、显示图书表。<br>  Ⅱ.管理系统<br>  该部分可以实现的功能有：插入图书、删除图书、显示图书表、查找图书、统计信息。<br>  <a id="more"></a><br>二、功能实现<br>  1.主函数<br>  该部分主要用于调用各功能函数，并实现系统切换、分级与界面切换。主要包括：</p>
+<pre><code>  ①欢迎界面
+该界面可选择退出、进入学生系统、进入管理系统，一旦调用系统，则进入第一级循环。
+②学生系统
+该界面由终止条件为0(int)的第二级子循环组成，下包括4个功能。
+    Ⅰ.查找图书功能
+    若进入该功能，输入1(int)，进入搜索循环（第三级子循环），下包括4个功 
+    能：按编号查找、按书名查找、按作者查找、按借阅状态查找（0：已借出
+    1：可借阅），通过输入相应数字及字符串进行查找，并返回相应的查找内容，
+    按任意键退出后返回上一级。
+    Ⅱ.借阅图书功能
+    若进入该功能，输入2(int)，进而调用借阅函数，输入编号进行借阅。
+    Ⅲ.归还图书功能
+    若进入该功能，输入3(int)，进而调用归还函数，输入编号进行归还。
+    Ⅳ.显示当前图书表
+    若进入该功能，输入4(int)，进而调用打印函数，打印当前图书表，按任意键
+    返回上一级。
+③管理系统
+该界面由终止条件为0(int)的第二级子循环组成，下包括5个功能。
+    Ⅰ.插入图书功能
+    若进入该功能，则由终止条件为返回值为0(int)的循环插入函数组成，可以按
+    &apos;*&apos;号退出循环，否则继续插入。
+    Ⅱ.删除图书功能
+    若进入该功能，则调用删除界面函数，进而选择按编号、书名、作者删除，终
+    止条件为0(int)。
+    Ⅲ.显示当前图书表
+    同学生系统Ⅳ。
+    Ⅳ.查找图书功能
+    同学生系统Ⅰ。
+    Ⅴ.统计功能
+    若进入该功能，则统计图书信息及借阅情况，按任意键返回上一级。</code></pre><p>  2.各功能函数<br>  该部分为各功能函数介绍，函数简介如下：</p>
+<pre><code><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line">   <span class="comment">//返回值为0或1的欢迎界面函数</span></span><br><span class="line">   <span class="function"><span class="keyword">int</span> <span class="title">Home</span><span class="params">()</span></span>;</span><br><span class="line">   </span><br><span class="line">   <span class="comment">//返回值为0-4的学生界面函数</span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">Student</span><span class="params">()</span></span>;</span><br><span class="line">   </span><br><span class="line">   <span class="comment">//返回值为0-5的管理界面函数</span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">Admin</span><span class="params">()</span></span>;</span><br><span class="line">   </span><br><span class="line">   <span class="comment">//建立单项循环链表函数</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">InitdList</span><span class="params">(dLinklist *&amp;)</span></span>;</span><br><span class="line">   </span><br><span class="line">   <span class="comment">//返回值为0或1的插入功能函数</span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">Insert</span><span class="params">(dLinklist *)</span></span>;</span><br><span class="line">   </span><br><span class="line">   <span class="comment">//打印图书表函数</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">Print</span><span class="params">(dLinklist *)</span></span>;</span><br><span class="line">   </span><br><span class="line">   <span class="comment">//返回值为0-4的搜索界面函数</span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">Search_Home</span><span class="params">()</span></span>; </span><br><span class="line">   </span><br><span class="line">   <span class="comment">//搜索功能函数</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">Search</span><span class="params">(dLinklist *,<span class="keyword">int</span>)</span></span>;</span><br><span class="line">   </span><br><span class="line">   <span class="comment">//返回值为0-3的删除界面函数</span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">Delete_Home</span><span class="params">()</span></span>;</span><br><span class="line">   </span><br><span class="line">   <span class="comment">//删除功能函数</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">Delete</span><span class="params">(dLinklist *,<span class="keyword">int</span>)</span></span>;</span><br><span class="line">   </span><br><span class="line">   <span class="comment">//统计功能函数</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">Count</span><span class="params">(dLinklist *)</span></span>; </span><br><span class="line">   </span><br><span class="line">   <span class="comment">//借阅功能函数</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">Borrow</span><span class="params">(dLinklist *)</span></span>;</span><br><span class="line">   </span><br><span class="line">   <span class="comment">//归还功能函数</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">Return</span><span class="params">(dLinklist *)</span></span>;</span><br></pre></td></tr></table></figure></code></pre><p>  具体实现请下载附件。<br>三、功能概览<br>  如图所示。</p>
+<p><img src="/images/pasted-46.png" alt="upload successful"></p>
+<p><img src="/images/pasted-47.png" alt="upload successful"></p>
+<p><img src="/images/pasted-48.png" alt="upload successful"></p>
+<p><img src="/images/pasted-49.png" alt="upload successful"></p>
+<p><img src="/images/pasted-50.png" alt="upload successful"></p>
+<p><img src="/images/pasted-51.png" alt="upload successful"></p>
+<p>四、附件下载<br>  附件中包含所有可运行函数，请使用DEV C++打开，使用VC等IDE须修改main返回值为void，并去掉主函数末尾返回值。</p>
+<p><a href="/download/图书管理系统（正式版）v1.0.3.cpp" ">图书管理系统（正式版）v1.0.3</a></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/C%E8%AF%AD%E8%A8%80/" rel="tag"># C语言</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2020/09/03/%E5%9F%BA%E4%BA%8Ematlab%E7%BC%96%E7%A8%8B%E7%9A%84%E2%80%9C%E7%94%9F%E6%97%A5%E6%82%96%E8%AE%BA%E2%80%9D%E4%BB%BF%E7%9C%9F%E6%A8%A1%E6%8B%9F%E5%AE%9E%E9%AA%8C/" rel="next" title="基于matlab编程的“生日悖论”仿真模拟实验">
+                <i class="fa fa-chevron-left"></i> 基于matlab编程的“生日悖论”仿真模拟实验
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2020/09/27/%E7%94%B1Python%E9%87%8D%E6%9E%84%E7%9A%84%E7%BA%BF%E6%80%A7%E5%9B%9E%E5%BD%92%E7%AE%97%E6%B3%95/" rel="prev" title="由Python重构的线性回归算法">
+                由Python重构的线性回归算法 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div class="comments" id="comments">
+    </div>
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+
+      <section class="site-overview-wrap sidebar-panel sidebar-panel-active">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/avatar.gif"
+                alt="" />
+            
+              <p class="site-author-name" itemprop="name"></p>
+              <p class="site-description motion-element" itemprop="description">诸君，我还是想学NLP</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/%7C%7C%20archive">
+              
+                  <span class="site-state-item-count">29</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">13</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">12</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder"></span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Pisces</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+  <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+  <script src="//unpkg.com/valine/dist/Valine.min.js"></script>
+  
+  <script type="text/javascript">
+    var GUEST = ['nick','mail','link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item=>{
+      return GUEST.indexOf(item)>-1;
+    });
+    new Valine({
+        el: '#comments' ,
+        verify: false,
+        notify: false,
+        appId: 'tTKVD3voefpRYJhQOxDxxtNi-gzGzoHsz',
+        appKey: 'GdkqB8WSAwEVy1DJKQWeGEMT',
+        placeholder: 'Just go go',
+        avatar:'mm',
+        guest_info:guest,
+        pageSize:'10' || 10,
+    });
+  </script>
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  
+
+
+  
+
+  
+
+  <script type="text/javascript" src="//cdn.bootcss.com/canvas-nest.js/1.0.0/canvas-nest.min.js"></script>
+</body>
+</html>

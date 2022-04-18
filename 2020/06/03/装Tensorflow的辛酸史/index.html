@@ -1,0 +1,841 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="机器学习,安装," />
+
+
+
+
+  
+
+
+  <link rel="alternate" href="/atom.xml" title="村山羊的博客" type="application/atom+xml" />
+
+
+
+
+
+
+<meta name="description" content="我动笔写这篇文章的时候是6月3日晚上22：37分，在此之前的5个小时中，我一直处于受苦当中——当然不是像地狱一样无穷无尽的痛苦，亦不是雄鹰啄食普罗米修斯肝脏的苦痛——我最后还是装上了Tensorflow，除了结尾函数返回True的惊喜之外，是一种如见到古神般深深的不可名状的恐惧（愿长眠的克苏鲁候汝入眠，希望拉莱耶的宅邸光芒永存）。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="装Tensorflow的辛酸史——安装&amp;杂谈">
+<meta property="og:url" content="https://cunsy192.github.io/2020/06/03/%E8%A3%85Tensorflow%E7%9A%84%E8%BE%9B%E9%85%B8%E5%8F%B2/index.html">
+<meta property="og:site_name" content="村山羊的博客">
+<meta property="og:description" content="我动笔写这篇文章的时候是6月3日晚上22：37分，在此之前的5个小时中，我一直处于受苦当中——当然不是像地狱一样无穷无尽的痛苦，亦不是雄鹰啄食普罗米修斯肝脏的苦痛——我最后还是装上了Tensorflow，除了结尾函数返回True的惊喜之外，是一种如见到古神般深深的不可名状的恐惧（愿长眠的克苏鲁候汝入眠，希望拉莱耶的宅邸光芒永存）。">
+<meta property="og:image" content="https://cunsy192.github.io/images/pasted-26.png">
+<meta property="article:published_time" content="2020-06-03T14:34:00.000Z">
+<meta property="article:modified_time" content="2020-09-29T16:33:50.612Z">
+<meta property="article:tag" content="机器学习">
+<meta property="article:tag" content="安装">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://cunsy192.github.io/images/pasted-26.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"always","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://cunsy192.github.io/2020/06/03/装Tensorflow的辛酸史/"/>
+
+
+
+
+
+  <title>装Tensorflow的辛酸史——安装&杂谈 | 村山羊的博客</title>
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?c7b7d45a314b528e63ec65f93375707c";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+  
+
+  
+<meta name="generator" content="Hexo 4.2.0"></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">村山羊的博客</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">追随属于你的星星</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://cunsy192.github.io/2020/06/03/%E8%A3%85Tensorflow%E7%9A%84%E8%BE%9B%E9%85%B8%E5%8F%B2/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="村山羊的博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">装Tensorflow的辛酸史——安装&杂谈</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-06-03T22:34:00+08:00">
+                2020-06-03
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%9D%82%E8%B0%88/" itemprop="url" rel="index">
+                    <span itemprop="name">杂谈</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2020/06/03/%E8%A3%85Tensorflow%E7%9A%84%E8%BE%9B%E9%85%B8%E5%8F%B2/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2020/06/03/%E8%A3%85Tensorflow%E7%9A%84%E8%BE%9B%E9%85%B8%E5%8F%B2/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>我动笔写这篇文章的时候是6月3日晚上22：37分，在此之前的5个小时中，我一直处于受苦当中——当然不是像地狱一样无穷无尽的痛苦，亦不是雄鹰啄食普罗米修斯肝脏的苦痛——我最后还是装上了Tensorflow，除了结尾函数返回True的惊喜之外，是一种如见到古神般深深的不可名状的恐惧（愿长眠的克苏鲁候汝入眠，希望拉莱耶的宅邸光芒永存）。</p>
+<a id="more"></a>
+<p>这里是我san值没有清零前的琐碎话语：这次装Tensorflow本来想借助B站的力量，于是找到了莫烦python这位up来学习，然后看着看着就不由自主地翻到了评论，只见硕大的（这是夸张的说法，额，应该吧）url展现在眼前，下书由规范电脑字组成的一句话：“只要有手就能安装”。</p>
+<p>好家伙，我现在想起来真得谢谢他。</p>
+<p>于是我进入了该CSDN教程，在午觉后开始了惊心动魄的旅程。教程地址按老规矩放在文末①，以供查阅。</p>
+<p>前面万事如意，不过在安装Tensorflow这一步出现了第一个错误，即无法使用ssl模块安装Tensorflow库，查了半天，大部分人员秉着热情好客的原则和对于ctrl+C和ctrl+v的迷恋与执着，告诉我要改ssl权限，后终于发现了正解②：在官网安装openssl（我现在严重怀疑是当时装python时没有选web功能导致的），然后安装，遂解。</p>
+<p><img src="/images/pasted-26.png" alt="upload successful"></p>
+<p>（贴张下载图来表示我激动的心情）</p>
+<p>然后一路顺风，终于到了验证tensorflow能不能用的时刻，按命令，进入ipython，输入：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> tensorflow <span class="keyword">as</span> tf</span><br></pre></td></tr></table></figure>
+
+<p>豁，好家伙，这字体还会变色，大概就成了。不出意料地成功了。（小道消息：某知乎网友说这行代码在巴菲特看来值一个亿，当然这和让黄油和猫绑在一起做成永动机的真实姓差不多）</p>
+<p>然后，在使用函数</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">tf.test.is_gpu_available()</span><br></pre></td></tr></table></figure>
+<p>时出了问题，主要表现为前几个信息都对，最后忽然给了个F，网上说是GPU的问题，又是添加路径又是重新下载驱动，最后发现了这篇文章③，说是要更新驱动。</p>
+<p>于是我点开了nvidia的驱动界面，发现真的有更新可以使用。这时候，我犹豫了。</p>
+<p>经历过ubuntu那与英伟达显卡不兼容的惨剧后，我只想好好说一句：”AMD,YES!”</p>
+<p>不过想了一想自己的机会成本，还是按下了“快速安装”的按钮</p>
+<p><button>快速安装</button></p>
+<p>对，上面的这个按钮完全没有作用，他只是在我并不漫长的web前端中一个近乎失败的例子罢了（哭哭），我主要是为了表现一种快要成佛的心态。</p>
+<p>就在这时，他报了错：“其他安装程序正在运行，安装失败”。</p>
+<p>还好重启后恢复了正常，人生也像这样起起落落吧，习惯了。</p>
+<p>最后安装完毕，我打开了cmd命令行，抱着必输的信念说到：“再不成功就不干了！”</p>
+<p>在这时我按下了回车。</p>
+<figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">In</span> [<span class="number">2</span>]: tf.test.is_gpu_available()</span><br><span class="line">Successfully opened dynamic library cudart64_101.dll</span><br><span class="line">Successfully opened dynamic library cublas64_10.dll</span><br><span class="line">Successfully opened dynamic library cufft64_10.dll</span><br><span class="line">Successfully opened dynamic library curand64_10.dll</span><br><span class="line">Successfully opened dynamic library cusolver64_10.dll</span><br><span class="line">Successfully opened dynamic library cusparse64_10.dll</span><br><span class="line">Successfully opened dynamic library cudnn64_7.dll</span><br><span class="line">Adding visible gpu devices: <span class="number">0</span></span><br><span class="line">Device interconnect StreamExecutor with strength <span class="number">1</span> edge matrix:</span><br><span class="line">     <span class="number">0</span></span><br><span class="line"><span class="number">0</span>:   N</span><br><span class="line"><span class="function">GPU:0 <span class="title">with</span> 4702 <span class="title">MB</span> <span class="title">memory</span>) -&gt; <span class="title">physical</span> <span class="title">GPU</span></span></span><br></pre></td></tr></table></figure>
+
+<p>最后，在我大脑开始搜索结果之前，出现了这么一句话，</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Out[<span class="number">2</span>]: <span class="literal">True</span></span><br></pre></td></tr></table></figure>
+
+<p>返回值为真。那一刻，除了欢呼，伴随着一种与世隔绝的恍惚感，如黄昏的光线找到了晨曦，如夜半的繁星看见了日出，如那一位学子心心念念的jvav，和清华的雷课堂。</p>
+<p>Tensorflow库安装成功，接下来会使用其对之前所学和之后所学的机器学习内容进行python上的重写和改进。</p>
+<p>文末链接：</p>
+<p>①<a href="https://blog.csdn.net/weixin_44170512/article/details/103990592" target="_blank" rel="noopener">Tensorflow安装教程</a></p>
+<p>②<a href="https://blog.csdn.net/m0_37872216/article/details/103121248?utm_medium=distribute.pc_relevant.none-task-blog-BlogCommendFromMachineLearnPai2-1.nonecase&depth_1-utm_source=distribute.pc_relevant.none-task-blog-BlogCommendFromMachineLearnPai2-1.nonecase" target="_blank" rel="noopener">解决win10“ssl module in Python is not available”与国内镜像源加速</a></p>
+<p>③<a href="https://www.cnblogs.com/ziyu-trip/p/12663978.html" target="_blank" rel="noopener">解决GPU问题（需操作后更新驱动）</a></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/" rel="tag"># 机器学习</a>
+          
+            <a href="/tags/%E5%AE%89%E8%A3%85/" rel="tag"># 安装</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2020/06/02/%E9%80%BB%E8%BE%91%E5%9B%9E%E5%BD%92/" rel="next" title="逻辑回归——预告">
+                <i class="fa fa-chevron-left"></i> 逻辑回归——预告
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2020/06/08/%E6%95%B0%E6%A8%A1%E8%BF%99%E6%A1%A3%E5%AD%90%E4%BA%8B/" rel="prev" title="数模和高考这档子事">
+                数模和高考这档子事 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div class="comments" id="comments">
+    </div>
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+
+      <section class="site-overview-wrap sidebar-panel sidebar-panel-active">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/avatar.gif"
+                alt="" />
+            
+              <p class="site-author-name" itemprop="name"></p>
+              <p class="site-description motion-element" itemprop="description">诸君，我还是想学NLP</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/%7C%7C%20archive">
+              
+                  <span class="site-state-item-count">29</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">13</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">12</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder"></span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Pisces</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+  <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+  <script src="//unpkg.com/valine/dist/Valine.min.js"></script>
+  
+  <script type="text/javascript">
+    var GUEST = ['nick','mail','link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item=>{
+      return GUEST.indexOf(item)>-1;
+    });
+    new Valine({
+        el: '#comments' ,
+        verify: false,
+        notify: false,
+        appId: 'tTKVD3voefpRYJhQOxDxxtNi-gzGzoHsz',
+        appKey: 'GdkqB8WSAwEVy1DJKQWeGEMT',
+        placeholder: 'Just go go',
+        avatar:'mm',
+        guest_info:guest,
+        pageSize:'10' || 10,
+    });
+  </script>
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  
+
+
+  
+
+  
+
+  <script type="text/javascript" src="//cdn.bootcss.com/canvas-nest.js/1.0.0/canvas-nest.min.js"></script>
+</body>
+</html>

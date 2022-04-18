@@ -1,0 +1,868 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="机器学习,matlab," />
+
+
+
+
+  
+
+
+  <link rel="alternate" href="/atom.xml" title="村山羊的博客" type="application/atom+xml" />
+
+
+
+
+
+
+<meta name="description" content="本文将从高度数学与线性代数角度来阐述线性回归算法的可执行性，并给出完整实例(matlab编写)。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="机器学习模型：线性回归（一元）">
+<meta property="og:url" content="https://cunsy192.github.io/2020/05/30/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E6%A8%A1%E5%9E%8B%EF%BC%9A%E7%BA%BF%E6%80%A7%E5%9B%9E%E5%BD%92/index.html">
+<meta property="og:site_name" content="村山羊的博客">
+<meta property="og:description" content="本文将从高度数学与线性代数角度来阐述线性回归算法的可执行性，并给出完整实例(matlab编写)。">
+<meta property="og:image" content="https://cunsy192.github.io/images/pasted-9.png">
+<meta property="og:image" content="https://cunsy192.github.io/images/pasted-10.png">
+<meta property="og:image" content="https://cunsy192.github.io/images/pasted-11.png">
+<meta property="og:image" content="https://cunsy192.github.io/images/pasted-12.png">
+<meta property="og:image" content="https://cunsy192.github.io/images/pasted-13.png">
+<meta property="og:image" content="https://cunsy192.github.io/images/pasted-14.png">
+<meta property="og:image" content="https://cunsy192.github.io/images/pasted-15.png">
+<meta property="og:image" content="https://cunsy192.github.io/images/pasted-16.png">
+<meta property="og:image" content="https://cunsy192.github.io/images/pasted-17.png">
+<meta property="og:image" content="https://cunsy192.github.io/images/pasted-19.png">
+<meta property="og:image" content="https://cunsy192.github.io/images/pasted-20.png">
+<meta property="article:published_time" content="2020-05-30T15:52:00.000Z">
+<meta property="article:modified_time" content="2020-09-27T10:28:55.134Z">
+<meta property="article:tag" content="机器学习">
+<meta property="article:tag" content="matlab">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://cunsy192.github.io/images/pasted-9.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"always","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://cunsy192.github.io/2020/05/30/机器学习模型：线性回归/"/>
+
+
+
+
+
+  <title>机器学习模型：线性回归（一元） | 村山羊的博客</title>
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?c7b7d45a314b528e63ec65f93375707c";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+  
+
+  
+<meta name="generator" content="Hexo 4.2.0"></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">村山羊的博客</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">追随属于你的星星</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://cunsy192.github.io/2020/05/30/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E6%A8%A1%E5%9E%8B%EF%BC%9A%E7%BA%BF%E6%80%A7%E5%9B%9E%E5%BD%92/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="村山羊的博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">机器学习模型：线性回归（一元）</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-05-30T23:52:00+08:00">
+                2020-05-30
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%88%91%E4%B8%8EAI/" itemprop="url" rel="index">
+                    <span itemprop="name">我与AI</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2020/05/30/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E6%A8%A1%E5%9E%8B%EF%BC%9A%E7%BA%BF%E6%80%A7%E5%9B%9E%E5%BD%92/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2020/05/30/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E6%A8%A1%E5%9E%8B%EF%BC%9A%E7%BA%BF%E6%80%A7%E5%9B%9E%E5%BD%92/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>本文将从高度数学与线性代数角度来阐述线性回归算法的可执行性，并给出完整实例(matlab编写)。</p>
+<a id="more"></a>
+<p>这里是声明部分：本文章使用markdown语法编写，因为不懂如何插入公式，故使用英译法表示希腊字母，矩阵元素以中国规定的行列表示法表示。</p>
+<p>Part Ⅰ<br>代价函数</p>
+<p>高中的伟大导师蒋（以下简称jml）曾经讲过初级的误差估计（一元函数），在高等数学中<br>我们将对误差估计做出更加精确化的描述（虽然我高中数学非常菜）。</p>
+<p>假设有一组数据集，分别用x和y表示横纵坐标，那么在坐标轴上可以得到一组离散的坐标点：</p>
+<p><img src="/images/pasted-9.png" alt="upload successful">  </p>
+<pre><code>（图片来自于百度）</code></pre><p> 要拟合这些点，也就是得到所谓得“拟合函数”，我们需要两个参数，这里称作theta1和<br> theta2，也就是jml在高中所说的y=kx+b中的b与k。</p>
+<p> 我们先不考虑如何得到这两个参数，先考虑拟合情况好不好，那么，需要一个函数来判定拟合情况，这个函数在高中有接触过，就是把拟合函数在x处的y’与原本的y作差后平方，接着对每一个算出每一个y’,求和，然后再除以2倍的样本值（至于为什么是2倍的样本值，这是因为之后要讲的梯度下降需要对每一个变量求偏导）</p>
+<p>如果具体到公式，以h表示拟合函数，那么：</p>
+<p><img src="/images/pasted-10.png" alt="upload successful"></p>
+<p>代价函数J为：</p>
+<p><img src="/images/pasted-11.png" alt="upload successful"></p>
+<p>此时要想知道拟合情况，只要看J函数的值与0的距离，离0越近，拟合越好。<br>用matlab表示该函数，即</p>
+<figure class="highlight matlab"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">J</span> = <span class="title">Jcost</span><span class="params">(X,y,theta)</span></span></span><br><span class="line">m = <span class="built_in">size</span>(X,<span class="number">1</span>); <span class="comment">%计算样本个数</span></span><br><span class="line">predictions = X*theta; <span class="comment">%计算预测值</span></span><br><span class="line">sqrErrors = (predictions - y).^<span class="number">2</span>; <span class="comment">%计算误差</span></span><br><span class="line">J = <span class="number">1</span>/(<span class="number">2</span>*m) * sum(sqrErrors); <span class="comment">%计算损失</span></span><br></pre></td></tr></table></figure>
+<p>测试，得到的结果正确。</p>
+<p> Part Ⅱ<br> 梯度下降</p>
+<p> 现在我们知道如何量化表示拟合函数的拟合情况，但是重要的问题还是没有解决，即如何求出拟合函数。在吴恩达的课程中提供了两种方法，这两种方法均会介绍，但我们着重讲述第二种方法，即梯度下降法。</p>
+<p> ①超定线性方程组与最小二乘解</p>
+<p> 考虑一个方程组(Ax=b)，它由n个未知数组成，却有大于等于n个的方程，这样的方程组称为超定线性方程组。这种方程组经过数学推导（从略）后可以得到以下的式子：</p>
+<p><img src="/images/pasted-12.png" alt="upload successful"></p>
+<p>x就为Ax=b的最小二乘解。原方程组可能无解，向量x的各项带入方程组，使得与方程组中各方程的解最接近（也就是误差最小），这时的解称为最小二乘解。</p>
+<p>②梯度下降法<br>同济高等数学在偏微分一章讲过了梯度下降法的具体内容，按百度百科所说，<br>“梯度下降是迭代法的一种,可以用于求解最小二乘问题。”</p>
+<p>我们知道，代价函数J拥有它的最小解，这个解不一定能用数学方式表达出来，而数学家想出了一种办法，可以有效地让代价函数收敛到它的极小值（不是最小值，所以梯度下降法具有不可避免的误差），具体如下：</p>
+<p>一、初始化变量</p>
+<p>二、对函数J求一个变量的偏导（这里与之前的1/2m呼应，因为求导后平方项会多出一个2，刚好消去，同时，此步是为了求出在初始化条件下在某一点函数的切线，不过我偏导的几何没有弄清，有说错的地方请指正）</p>
+<p>三、给予J的偏导一个速率α,这是为了让J的偏导能向该方向“迈开步子”，“步子”决定了J的收敛时间与收敛区域（α过小，则收敛时间越长；α越大，则收敛区域越大，甚至可能不收敛）</p>
+<p>四、将对J求偏导的那个变量减去α×J’，得到新的变量（这一步称为对变量的一次迭代）</p>
+<p>五、对其他的变量做上述的变化一到四，当所有的变量均完成后一个循环结束，进入下一个循环</p>
+<p>六、迭代多次后，得到最小二乘（或近似）解</p>
+<p>一元的梯度下降公式如下：</p>
+<p><img src="/images/pasted-13.png" alt="upload successful"></p>
+<pre><code>（来自吴恩达：机器学习，网易公开课）</code></pre><p>PartⅢ<br>线性回归模型<br>现在你已经了解了梯度下降的原理，可以结合线性代数的知识来统一模型并加以应用。我从Kaggle上下载了一个二元数据集（300个数据对），他差不多长这样：</p>
+<p><img src="/images/pasted-14.png" alt="upload successful"></p>
+<p>图中的数据有经过升序排列，与原数据不太一样。</p>
+<p>如何利用已有的模型编程解决这些数据的拟合？经过吴老师的启发，我们把二元参数（即θ1、θ2）看作一个列向量θ=[θ1;θ2]，（注意，θ’表示为θ的转置）把上图中的x与y分离，成为两个单独的列向量，同时将x的左侧扩充一个列向量，成为如下样子：</p>
+<p><img src="/images/pasted-15.png" alt="upload successful"></p>
+<p>这样，当我们算(θ’<em>x’)’-y（化简得x</em>θ-y）时就是算出了残差，带入梯度下降公式同时可以得到（以下部分有经过化简与改良，比较难理解）：</p>
+<figure class="highlight matlab"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> <span class="built_in">i</span> = <span class="number">1</span>:k,</span><br><span class="line">    A(<span class="built_in">i</span>) = (<span class="number">1</span>/m)*sum((x*theta-y).*x(:,<span class="built_in">i</span>));</span><br><span class="line"><span class="keyword">end</span></span><br></pre></td></tr></table></figure>
+
+<p>这里的A表示一个2×1的行向量，k为θ的列数（即为2），m为数据对数（这里为300对），sum()为求和函数，而sum函数中的式子表示：</p>
+<p><img src="/images/pasted-16.png" alt="upload successful"></p>
+<p>x(i)0为x矩阵中第1列第i行的元素（全为1）；<br>x(i)1为x矩阵中第2列第i行的元素（为0 0 0 1 ……）。<br>这样，我们就得到了模型的核心算法，接下来就是迭代了，代码略。</p>
+<p>你可能会发现该模型不仅适合于二元线性回归模型，扩充参数矩阵后仍然适用，但那要等到我下一次更新了。</p>
+<p>最后，放出点的离散图与回归过程与回归结果图：</p>
+<p><img src="/images/pasted-17.png" alt="upload successful"></p>
+<pre><code>（数据集的离散图）</code></pre><p><img src="/images/pasted-19.png" alt="upload successful"></p>
+<pre><code>（迭代次数为1000时得到的线性回归图（方向由水平直线向散点图偏移））</code></pre><p><img src="/images/pasted-20.png" alt="upload successful"></p>
+<pre><code>（最终的线性回归图，线比较小容易忽视）</code></pre><p>附上有关数据与程序下载链接：</p>
+<p> <a href="/download/Jcost.m" ">代价函数</a></p>
+<p> <a href="/download/test.csv" ">数据集</a></p>
+<p> <a href="/download/test.m" ">一元线性回归主函数</a></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/" rel="tag"># 机器学习</a>
+          
+            <a href="/tags/matlab/" rel="tag"># matlab</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2020/05/30/%E3%80%8A%E5%85%B3%E4%BA%8E%E7%BA%BF%E6%80%A7%E5%9B%9E%E5%BD%92%E8%B6%8A%E7%AE%97%E8%B6%8A%E5%A4%A7%E8%BF%99%E4%BB%B6%E4%BA%8B%E3%80%8B/" rel="next" title="《关于线性回归越算越大这件事》-杂谈">
+                <i class="fa fa-chevron-left"></i> 《关于线性回归越算越大这件事》-杂谈
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2020/05/31/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E6%A8%A1%E5%9E%8B%EF%BC%9A%E7%BA%BF%E6%80%A7%E5%9B%9E%E5%BD%92%EF%BC%88%E5%A4%9A%E5%85%83%EF%BC%89/" rel="prev" title="机器学习模型：线性回归（多元）">
+                机器学习模型：线性回归（多元） <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div class="comments" id="comments">
+    </div>
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+
+      <section class="site-overview-wrap sidebar-panel sidebar-panel-active">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/avatar.gif"
+                alt="" />
+            
+              <p class="site-author-name" itemprop="name"></p>
+              <p class="site-description motion-element" itemprop="description">诸君，我还是想学NLP</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/%7C%7C%20archive">
+              
+                  <span class="site-state-item-count">29</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">13</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">12</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder"></span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Pisces</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+  <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+  <script src="//unpkg.com/valine/dist/Valine.min.js"></script>
+  
+  <script type="text/javascript">
+    var GUEST = ['nick','mail','link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item=>{
+      return GUEST.indexOf(item)>-1;
+    });
+    new Valine({
+        el: '#comments' ,
+        verify: false,
+        notify: false,
+        appId: 'tTKVD3voefpRYJhQOxDxxtNi-gzGzoHsz',
+        appKey: 'GdkqB8WSAwEVy1DJKQWeGEMT',
+        placeholder: 'Just go go',
+        avatar:'mm',
+        guest_info:guest,
+        pageSize:'10' || 10,
+    });
+  </script>
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  
+
+
+  
+
+  
+
+  <script type="text/javascript" src="//cdn.bootcss.com/canvas-nest.js/1.0.0/canvas-nest.min.js"></script>
+</body>
+</html>

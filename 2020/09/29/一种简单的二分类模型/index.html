@@ -1,0 +1,845 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="机器学习,Python,矩阵," />
+
+
+
+
+  
+
+
+  <link rel="alternate" href="/atom.xml" title="村山羊的博客" type="application/atom+xml" />
+
+
+
+
+
+
+<meta name="description" content="本文将简单介绍逻辑回归中的常用模型——基于梯度下降优化的逻辑回归二分类模型的编程实践。在本文开始前，你需要具备这些基础：1、线性代数2、导数与偏导数3、概率论与数理统计基础（主要指逻辑斯蒂函数[1]的运用）4、线性回归模型5、逻辑回归模型的概念">
+<meta property="og:type" content="article">
+<meta property="og:title" content="一种简单的二分类模型">
+<meta property="og:url" content="https://cunsy192.github.io/2020/09/29/%E4%B8%80%E7%A7%8D%E7%AE%80%E5%8D%95%E7%9A%84%E4%BA%8C%E5%88%86%E7%B1%BB%E6%A8%A1%E5%9E%8B/index.html">
+<meta property="og:site_name" content="村山羊的博客">
+<meta property="og:description" content="本文将简单介绍逻辑回归中的常用模型——基于梯度下降优化的逻辑回归二分类模型的编程实践。在本文开始前，你需要具备这些基础：1、线性代数2、导数与偏导数3、概率论与数理统计基础（主要指逻辑斯蒂函数[1]的运用）4、线性回归模型5、逻辑回归模型的概念">
+<meta property="og:image" content="https://cunsy192.github.io/images/pasted-56.png">
+<meta property="og:image" content="https://cunsy192.github.io/images/pasted-61.png">
+<meta property="og:image" content="https://cunsy192.github.io/images/pasted-58.png">
+<meta property="og:image" content="https://cunsy192.github.io/images/pasted-60.png">
+<meta property="og:image" content="https://cunsy192.github.io/images/pasted-62.png">
+<meta property="og:image" content="https://cunsy192.github.io/images/pasted-63.png">
+<meta property="og:image" content="https://cunsy192.github.io/images/pasted-64.png">
+<meta property="article:published_time" content="2020-09-28T16:45:00.000Z">
+<meta property="article:modified_time" content="2020-09-29T16:32:30.413Z">
+<meta property="article:tag" content="机器学习">
+<meta property="article:tag" content="Python">
+<meta property="article:tag" content="矩阵">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://cunsy192.github.io/images/pasted-56.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"always","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://cunsy192.github.io/2020/09/29/一种简单的二分类模型/"/>
+
+
+
+
+
+  <title>一种简单的二分类模型 | 村山羊的博客</title>
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?c7b7d45a314b528e63ec65f93375707c";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+  
+
+  
+<meta name="generator" content="Hexo 4.2.0"></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">村山羊的博客</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">追随属于你的星星</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://cunsy192.github.io/2020/09/29/%E4%B8%80%E7%A7%8D%E7%AE%80%E5%8D%95%E7%9A%84%E4%BA%8C%E5%88%86%E7%B1%BB%E6%A8%A1%E5%9E%8B/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="村山羊的博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">一种简单的二分类模型</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-09-29T00:45:00+08:00">
+                2020-09-29
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%88%91%E4%B8%8EAI/" itemprop="url" rel="index">
+                    <span itemprop="name">我与AI</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2020/09/29/%E4%B8%80%E7%A7%8D%E7%AE%80%E5%8D%95%E7%9A%84%E4%BA%8C%E5%88%86%E7%B1%BB%E6%A8%A1%E5%9E%8B/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2020/09/29/%E4%B8%80%E7%A7%8D%E7%AE%80%E5%8D%95%E7%9A%84%E4%BA%8C%E5%88%86%E7%B1%BB%E6%A8%A1%E5%9E%8B/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>本文将简单介绍逻辑回归中的常用模型——基于梯度下降优化的逻辑回归二分类模型的编程实践。<br>在本文开始前，你需要具备这些基础：<br>1、线性代数<br>2、导数与偏导数<br>3、概率论与数理统计基础（主要指逻辑斯蒂函数[1]的运用）<br>4、线性回归模型<br>5、逻辑回归模型的概念</p>
+<a id="more"></a>
+<p>好，我们开始吧。<br>一、数据设置与建立矩阵<br>该部分我使用预先设置好的数据集，便于观察效果。<br><del>大佬可以用xlrd库直接导入，由于我刚学Python太菜了没有办法。</del><br>以列表形式给出后，构造矩阵，这里将自变量、因变量与权重分别分为三个矩阵：</p>
+<p><img src="/images/pasted-56.png" alt="upload successful"></p>
+<p>二、构造梯度下降损失单次迭代<br>设自变量矩阵为X，因变量矩阵为Y，权重矩阵为θ，有：</p>
+<p><img src="/images/pasted-61.png" alt="upload successful">       </p>
+<p>（我下次有时间得把渲染公式的插件搞上去，插入图片真是累死人）<br>此步需要注意求相乘构成的列向量的矩阵须用np.exp()函数，用math.exp()会出大问题！</p>
+<p>我们将真实的因变量矩阵表示为Y0，那么误差为：</p>
+<p><img src="/images/pasted-58.png" alt="upload successful"></p>
+<p>这里我们取Y作为前面的减数，去掉绝对值。<br>根据损失函数[2]，求导并经过矩阵变换得到：</p>
+<p><img src="/images/pasted-60.png" alt="upload successful"></p>
+<p>此步我们在迭代中设置一个空矩阵A用于储存迭代的误差与向量星乘之和a通过np.c_[]压入空矩阵A，再将A依次与列向量相乘并求和，最后按以上公式迭代（A须转置）</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#伪代码</span></span><br><span class="line">a = sum((Y-Y0)*xi</span><br></pre></td></tr></table></figure>
+<p>三、构造循环<br>此步同线性回归，设置循环结束条件iterations、步长（学习率）α、计数器cnt、数据个数m，套上第二步中所述梯度下降，完成。<br>四、函数泛化及输出<br>此步推导该公式使得三维决策平面降到二维决策边际：</p>
+<p><img src="/images/pasted-62.png" alt="upload successful"></p>
+<p>设置x1在数据的最小值与最大值之间（此处取0.1间距），输出。<br>五、效果展示</p>
+<p><img src="/images/pasted-63.png" alt="upload successful"></p>
+<pre><code>迭代次数：10000
+学习率：0.1
+无初值扰动
+可以看见，决策边际将圆点与三角点区分开来</code></pre><p>轨迹图如下：</p>
+<p><img src="/images/pasted-64.png" alt="upload successful"></p>
+<pre><code>迭代次数：100
+学习率：0.1
+无初值扰动
+可以看见，该决策边际从平行x轴出发，经过多次拟合，最后得到橘黄色直线（斜率最大负值的一条）</code></pre><p><del>老实说，有上下摆动我是没想到的</del></p>
+<p>六、下载项</p>
+<p><a href="/download/Binary_Classification.py" ">二分类逻辑回归</a></p>
+<p><a href="/download/逻辑回归-二分类.png" ">效果图</a></p>
+<p>七、参考资料<br>[1]<a href="https://baike.baidu.com/item/Logistic%E5%87%BD%E6%95%B0/3520384?fr=aladdin" target="_blank" rel="noopener">逻辑斯蒂函数</a><br>[2]<a href="https://www.zhihu.com/question/47744216?from=profile_question_card" target="_blank" rel="noopener">损失函数</a></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/" rel="tag"># 机器学习</a>
+          
+            <a href="/tags/Python/" rel="tag"># Python</a>
+          
+            <a href="/tags/%E7%9F%A9%E9%98%B5/" rel="tag"># 矩阵</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2020/09/27/%E7%94%B1Python%E9%87%8D%E6%9E%84%E7%9A%84%E7%BA%BF%E6%80%A7%E5%9B%9E%E5%BD%92%E7%AE%97%E6%B3%95/" rel="next" title="由Python重构的线性回归算法">
+                <i class="fa fa-chevron-left"></i> 由Python重构的线性回归算法
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2020/09/30/%E9%80%BB%E8%BE%91%E5%9B%9E%E5%BD%92%E2%80%94%E2%80%94%E5%A4%9A%E5%88%86%E7%B1%BB/" rel="prev" title="逻辑回归——多分类">
+                逻辑回归——多分类 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div class="comments" id="comments">
+    </div>
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+
+      <section class="site-overview-wrap sidebar-panel sidebar-panel-active">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/avatar.gif"
+                alt="" />
+            
+              <p class="site-author-name" itemprop="name"></p>
+              <p class="site-description motion-element" itemprop="description">诸君，我还是想学NLP</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/%7C%7C%20archive">
+              
+                  <span class="site-state-item-count">29</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">13</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">12</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder"></span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Pisces</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+  <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+  <script src="//unpkg.com/valine/dist/Valine.min.js"></script>
+  
+  <script type="text/javascript">
+    var GUEST = ['nick','mail','link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item=>{
+      return GUEST.indexOf(item)>-1;
+    });
+    new Valine({
+        el: '#comments' ,
+        verify: false,
+        notify: false,
+        appId: 'tTKVD3voefpRYJhQOxDxxtNi-gzGzoHsz',
+        appKey: 'GdkqB8WSAwEVy1DJKQWeGEMT',
+        placeholder: 'Just go go',
+        avatar:'mm',
+        guest_info:guest,
+        pageSize:'10' || 10,
+    });
+  </script>
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  
+
+
+  
+
+  
+
+  <script type="text/javascript" src="//cdn.bootcss.com/canvas-nest.js/1.0.0/canvas-nest.min.js"></script>
+</body>
+</html>

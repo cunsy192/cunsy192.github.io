@@ -1,0 +1,829 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="计算机视觉," />
+
+
+
+
+  
+
+
+  <link rel="alternate" href="/atom.xml" title="村山羊的博客" type="application/atom+xml" />
+
+
+
+
+
+
+<meta name="description" content="抽空实现了下计算机视觉中最基本的“Hello World”，Mnist数据集。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="卷积神经网络（手写体-MNIST数据集）的PyTorch实现">
+<meta property="og:url" content="https://cunsy192.github.io/2021/10/03/%E5%8D%B7%E7%A7%AF%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E7%9A%84PyTorch%E5%AE%9E%E7%8E%B0/index.html">
+<meta property="og:site_name" content="村山羊的博客">
+<meta property="og:description" content="抽空实现了下计算机视觉中最基本的“Hello World”，Mnist数据集。">
+<meta property="og:image" content="https://cunsy192.github.io/images/pasted-77.png">
+<meta property="og:image" content="https://cunsy192.github.io/images/pasted-78.png">
+<meta property="article:published_time" content="2021-10-03T13:22:00.000Z">
+<meta property="article:modified_time" content="2022-04-18T14:26:39.574Z">
+<meta property="article:tag" content="计算机视觉">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://cunsy192.github.io/images/pasted-77.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"always","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://cunsy192.github.io/2021/10/03/卷积神经网络的PyTorch实现/"/>
+
+
+
+
+
+  <title>卷积神经网络（手写体-MNIST数据集）的PyTorch实现 | 村山羊的博客</title>
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?c7b7d45a314b528e63ec65f93375707c";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+  
+
+  
+<meta name="generator" content="Hexo 4.2.0"></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">村山羊的博客</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">追随属于你的星星</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://cunsy192.github.io/2021/10/03/%E5%8D%B7%E7%A7%AF%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E7%9A%84PyTorch%E5%AE%9E%E7%8E%B0/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="村山羊的博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">卷积神经网络（手写体-MNIST数据集）的PyTorch实现</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-10-03T21:22:00+08:00">
+                2021-10-03
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%88%91%E4%B8%8EAI/" itemprop="url" rel="index">
+                    <span itemprop="name">我与AI</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2021/10/03/%E5%8D%B7%E7%A7%AF%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E7%9A%84PyTorch%E5%AE%9E%E7%8E%B0/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2021/10/03/%E5%8D%B7%E7%A7%AF%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E7%9A%84PyTorch%E5%AE%9E%E7%8E%B0/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>抽空实现了下计算机视觉中最基本的“Hello World”，Mnist数据集。<br>    <a id="more"></a><br>这里我用的是Jupyter Notebook，它比较方便快捷，适合进行快速debug，当然缺点就是自建库的调用不太方便。我将在GitHub上传该项目，欢迎star:)</p>
+<p>一、数据集处理<br>我用的是从百度网盘下载的（应该没有侵权吧233）的Mnist数据集，差不多长这个样子：</p>
+<p><img src="/images/pasted-77.png" alt="upload successful"><br>对，这是一种特殊的压缩格式，网络上现在很多都是直接用Pytorch下载，而我认为其实很多情况下都需要处理一些奇怪的数据类型，理想的“即插即用”的情况实在太少了。可见数据处理是门学问（只对我而言哈哈）。<br>这个格式可以用np.load()函数装载，读入后会以列表的形式装着四个子文件夹，分别为测试集与训练集的图像数据和标签，那么我们就可以都用numpy来表示这些数据了；之后，为了让这些数据能加速，需要转化成张量（Tensor）放入GPU，于是转化成张量的torch.from_numpy()也是必不可少的。这部分代码如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#加载数据集与预处理</span></span><br><span class="line">data = np.load(<span class="string">'mnist.npz'</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment">#读入数据（numpy格式）</span></span><br><span class="line">x_train = data[<span class="string">'x_train'</span>]</span><br><span class="line">y_train = data[<span class="string">'y_train'</span>]</span><br><span class="line">x_test = data[<span class="string">'x_test'</span>]</span><br><span class="line">y_test = data[<span class="string">'y_test'</span>]</span><br><span class="line"></span><br><span class="line"><span class="comment">#转化为tensor</span></span><br><span class="line">x_train = torch.from_numpy(x_train)</span><br><span class="line">y_train = torch.from_numpy(y_train)</span><br><span class="line">x_test = torch.from_numpy(x_test)</span><br><span class="line">y_test = torch.from_numpy(y_test)</span><br><span class="line"></span><br><span class="line"><span class="comment">#数据图像增加通道（numpy转化为tensor无通道）</span></span><br><span class="line">x_train = torch.unsqueeze(x_train, dim=<span class="number">1</span>)</span><br><span class="line">x_test = torch.unsqueeze(x_test, dim=<span class="number">1</span>)</span><br></pre></td></tr></table></figure>
+<p>这里有个图像增加通道，是因为我发现读入的数据只有三维（训练集是60000×28×28，600000是batch size，表示有600000张图片堆在一起处理），而后续处理需要增加一个channel，变成（60000×1×28×28）。<br>之后，要把数据和标签一一对应起来，这需要用到Torch中的Dataset类方法，我们需要继承这个父类并编写<strong>getitem</strong>()、<strong>len</strong>()、<strong>add</strong>()方法（这个方法可以不写）和初始化<strong>init</strong>()。我们希望这个类能够把x和y封装在一起，便于后边操作。我这里是这么写的：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#数据封装，方便之后网络处理</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Mnist_Dataset</span><span class="params">(Dataset)</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self, data, label)</span>:</span></span><br><span class="line">        super().__init__()</span><br><span class="line">        self.data = data</span><br><span class="line">        self.label = label</span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__getitem__</span><span class="params">(self, index)</span>:</span></span><br><span class="line">        data = self.data[index]</span><br><span class="line">        labels = self.label[index]</span><br><span class="line">        <span class="keyword">return</span> data, labels</span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__len__</span><span class="params">(self)</span>:</span></span><br><span class="line">        <span class="keyword">return</span> len(self.data)</span><br><span class="line"></span><br><span class="line">train_data = Mnist_Dataset(x_train, y_train)</span><br><span class="line">test_data = Mnist_Dataset(x_test, y_test)</span><br><span class="line"></span><br><span class="line"><span class="comment">#将数据放入数据加载器</span></span><br><span class="line">train_dataloader = DataLoader(train_data, batch_size=<span class="number">64</span>, shuffle=<span class="literal">True</span>)</span><br><span class="line">test_dataloader = DataLoader(test_data, batch_size=<span class="number">64</span>, shuffle=<span class="literal">True</span>)</span><br></pre></td></tr></table></figure>
+<p>后面调用只要用</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">train_data = Mnist_Dataset(x_train, y_train)</span><br><span class="line">test_data = Mnist_Dataset(x_test, y_test)</span><br></pre></td></tr></table></figure>
+<p>来封装数据即可。事实上这里我也只是依样画葫芦，具体的原理需要查阅其他文献，不过我发现大量的Dataset重构中，<strong>init</strong>()基本都是用来传入路径的，而<strong>getitem</strong>()主要用来对图像进行transform（如reshape操作等）并返回图像及label。<br>最后，我们需要一个DataLoader来装载Dataset,这个DataLoader是一个迭代器，将Dataset划分为若干个Batch，并打乱数据集（如果shuffle=True的话），在后续训练时，每次取出迭代器中的一个Batch进行训练，若后续利用优化器进行梯度下降，则实现了小批量梯度下降。当然，如果你的Batch设成1或者设成数据集的大小的话，也就实现了随机梯度下降或小批量梯度下降。<br>代码看这里：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#将数据放入数据加载器</span></span><br><span class="line">train_dataloader = DataLoader(train_data, batch_size=<span class="number">64</span>, shuffle=<span class="literal">True</span>)</span><br><span class="line">test_dataloader = DataLoader(test_data, batch_size=<span class="number">64</span>, shuffle=<span class="literal">True</span>)</span><br></pre></td></tr></table></figure>
+
+<p>二、网络及其定义<br>查阅相关论文，找到LetNet这一经典网络，我们继承nn.Module类，书写LetNet这一类：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#定义LeNet网络</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">LeNet</span><span class="params">(nn.Module)</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self)</span>:</span></span><br><span class="line">        super(LeNet, self).__init__()</span><br><span class="line">        self.conv1 = nn.Sequential(     <span class="comment">#input_size=(1*28*28)</span></span><br><span class="line">            nn.Conv2d(<span class="number">1</span>, <span class="number">6</span>, <span class="number">3</span>, <span class="number">1</span>, <span class="number">1</span>), </span><br><span class="line">            nn.ReLU(),      <span class="comment">#input_size=(6*28*28)</span></span><br><span class="line">            nn.MaxPool2d(kernel_size=<span class="number">2</span>, stride=<span class="number">2</span>),<span class="comment">#output_size=(6*14*14)</span></span><br><span class="line">        )</span><br><span class="line">        self.conv2 = nn.Sequential(</span><br><span class="line">            nn.Conv2d(<span class="number">6</span>, <span class="number">16</span>, <span class="number">3</span>),</span><br><span class="line">            nn.ReLU(),      <span class="comment">#input_size=(16*10*10)</span></span><br><span class="line">            nn.MaxPool2d(<span class="number">2</span>, <span class="number">2</span>)  <span class="comment">#output_size=(16*5*5)</span></span><br><span class="line">        )</span><br><span class="line">        self.fc1 = nn.Sequential(</span><br><span class="line">            nn.Linear(<span class="number">16</span> * <span class="number">6</span> * <span class="number">6</span>, <span class="number">120</span>),</span><br><span class="line">            nn.ReLU()</span><br><span class="line">        )</span><br><span class="line">        self.fc2 = nn.Sequential(</span><br><span class="line">            nn.Linear(<span class="number">120</span>, <span class="number">84</span>),</span><br><span class="line">            nn.ReLU()</span><br><span class="line">        )</span><br><span class="line">        self.fc3 = nn.Linear(<span class="number">84</span>, <span class="number">10</span>)</span><br><span class="line"></span><br><span class="line">    <span class="comment"># 定义前向传播过程，输入为x</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">forward</span><span class="params">(self, x)</span>:</span></span><br><span class="line">        x = self.conv1(x)</span><br><span class="line">        x = self.conv2(x)</span><br><span class="line">        <span class="comment"># nn.Linear()的输入输出都是维度为一的值，所以要把多维度的tensor展平成一维</span></span><br><span class="line">        x = x.view(x.size()[<span class="number">0</span>], <span class="number">-1</span>)</span><br><span class="line">        x = self.fc1(x)</span><br><span class="line">        x = self.fc2(x)</span><br><span class="line">        x = self.fc3(x)</span><br><span class="line">        <span class="keyword">return</span> x</span><br></pre></td></tr></table></figure>
+<p>可以看出，LetNet由俩函数组成，第一个是集成父类和定义网络结构的<strong>init</strong>函数，而另一个定义了前向传播，这里面关于nn.Conv2d等是Torch库的写法，不再赘述。<br>在使用网络时，我们需要传入一个四维张量（batch×channel×长×宽），这个网络自动输出10类手写体（0~9）每一类的概率。这里是代码，其中inputs是(64×1×28×28)的张量。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">outputs = model(inputs)</span><br></pre></td></tr></table></figure>
+
+<p>三、训练<br>我们已经定义了数据集与网络，现在首先要做的是定义损失函数与优化器，这里选的损失函数是交叉熵损失，因为交叉熵损失不用将标签转化为one-hot类型，而优化器用的是经典的Adam。需要注意的是，我们定义了一个model，这个model就是LeNet()，但是为了让它能在GPU上加速，要让它放在cuda上（没有的话就cpu咯）：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#指定使用的具体设备</span></span><br><span class="line">device = torch.device(<span class="string">"cuda"</span> <span class="keyword">if</span> torch.cuda.is_available() <span class="keyword">else</span> <span class="string">"cpu"</span>)</span><br><span class="line"></span><br><span class="line">model = LeNet().to(device)</span><br><span class="line">optimizer = optim.Adam(model.parameters())</span><br><span class="line">loss = nn.CrossEntropyLoss()</span><br></pre></td></tr></table></figure>
+<p>最后，我们开始训练：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#训练</span></span><br><span class="line"><span class="keyword">for</span> epoch <span class="keyword">in</span> range(total_epoch):</span><br><span class="line">    epoch_loss = <span class="number">0.0</span></span><br><span class="line">    train_correct = <span class="number">0</span></span><br><span class="line">    <span class="keyword">for</span> data <span class="keyword">in</span> train_dataloader:</span><br><span class="line">        inputs, labels = data</span><br><span class="line"></span><br><span class="line">        inputs, labels = Variable(inputs).cuda(), Variable(labels).cuda()</span><br><span class="line">        inputs = inputs.float()</span><br><span class="line"></span><br><span class="line">        optimizer.zero_grad()</span><br><span class="line"></span><br><span class="line">        outputs = model(inputs)</span><br><span class="line">        l = loss(outputs, labels)</span><br><span class="line">        l.backward()</span><br><span class="line">        optimizer.step()</span><br><span class="line"></span><br><span class="line">        _,id = torch.max(outputs.data, <span class="number">1</span>)</span><br><span class="line">        epoch_loss += l.data</span><br><span class="line">        train_correct += torch.sum(id == labels.data)</span><br><span class="line">        </span><br><span class="line">    <span class="comment">#打印出epoch、每个epoch的总loss以及精度</span></span><br><span class="line">    print(<span class="string">'epoch:%d | epoch_loss:%.03f | train_correct: %.03f'</span>%(epoch+<span class="number">1</span>,epoch_loss,train_correct/len(train_data)))</span><br><span class="line"></span><br><span class="line">print(<span class="string">"training finish!"</span>)</span><br></pre></td></tr></table></figure>
+<p>这里其实有点问题，每个epoch的loss是每个batch loss的平均值，这里用的是累积值。<br>Variable(inputs).cuda(), Variable(labels).cuda()用于将inputs和labels放到GPU上，没有这个会显示Tensor的类型不一致而报错，inputs = inputs.float()也是为了让数据一致，你可以试试去掉会有什么事情发生。<br>对了，反向传播前要将优化器梯度清零，所以有optimizer.zero_grad()；而optimizer.step()是为了更新l的值。<br>为了判断正确率，这里设置输出最大的outputs的值作为最终的分类结果，并和label进行对比，正确则train_correct加一，然后就是老生常谈的输出了，这块输出是这样的：</p>
+<p><img src="/images/pasted-78.png" alt="upload successful"></p>
+<p>训练完后保存模型，在测试时加载模型的代码长这样：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#保存训练模型</span></span><br><span class="line">torch.save(model, <span class="string">'LeNet'</span>)</span><br><span class="line"><span class="comment">#加载训练模型</span></span><br><span class="line">model = torch.load(<span class="string">'LeNet'</span>)</span><br></pre></td></tr></table></figure>
+
+<p>四、测试<br>这里和训练基本没区别，只是要导入测试集、没有epoch以及没有反向传播而已，祭出代码：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#对测试集进行测试</span></span><br><span class="line">test_loss = <span class="number">0.0</span></span><br><span class="line">test_correct = <span class="number">0</span></span><br><span class="line">loss = nn.CrossEntropyLoss()</span><br><span class="line"><span class="keyword">for</span> data <span class="keyword">in</span> test_dataloader:</span><br><span class="line">    inputs, labels = data</span><br><span class="line"></span><br><span class="line">    inputs, labels = Variable(inputs).cuda(), Variable(labels).cuda()</span><br><span class="line">    inputs = inputs.float()</span><br><span class="line">        </span><br><span class="line">    outputs = model(inputs)</span><br><span class="line">    l = loss(outputs, labels)</span><br><span class="line">        </span><br><span class="line">    _,id = torch.max(outputs.data, <span class="number">1</span>)</span><br><span class="line">    test_loss += l.data</span><br><span class="line">    test_correct += torch.sum(id == labels.data)</span><br><span class="line">        </span><br><span class="line">print(<span class="string">'loss:%.03f | train_correct: %.03f'</span>%(test_loss,test_correct/len(test_data)))</span><br></pre></td></tr></table></figure>
+<p>最终准确率为98.7%，loss为9.380，效果还是很好的。</p>
+<p>五、总结<br>其实感觉没啥好总结的，但是做出手写体识别还是挺有成就感的，之后大概会更新一些其他模型吧，哈哈。那么今天就到这里了，再见大家。</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E8%A7%86%E8%A7%89/" rel="tag"># 计算机视觉</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2020/10/23/%E4%BD%BF%E7%94%A8BP%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E5%AE%9E%E7%8E%B0%E4%BA%8C%E5%88%86%E7%B1%BB/" rel="next" title="使用BP神经网络实现二分类">
+                <i class="fa fa-chevron-left"></i> 使用BP神经网络实现二分类
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div class="comments" id="comments">
+    </div>
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+
+      <section class="site-overview-wrap sidebar-panel sidebar-panel-active">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/avatar.gif"
+                alt="" />
+            
+              <p class="site-author-name" itemprop="name"></p>
+              <p class="site-description motion-element" itemprop="description">诸君，我还是想学NLP</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/%7C%7C%20archive">
+              
+                  <span class="site-state-item-count">29</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">13</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">12</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder"></span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Pisces</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+  <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+  <script src="//unpkg.com/valine/dist/Valine.min.js"></script>
+  
+  <script type="text/javascript">
+    var GUEST = ['nick','mail','link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item=>{
+      return GUEST.indexOf(item)>-1;
+    });
+    new Valine({
+        el: '#comments' ,
+        verify: false,
+        notify: false,
+        appId: 'tTKVD3voefpRYJhQOxDxxtNi-gzGzoHsz',
+        appKey: 'GdkqB8WSAwEVy1DJKQWeGEMT',
+        placeholder: 'Just go go',
+        avatar:'mm',
+        guest_info:guest,
+        pageSize:'10' || 10,
+    });
+  </script>
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  
+
+
+  
+
+  
+
+  <script type="text/javascript" src="//cdn.bootcss.com/canvas-nest.js/1.0.0/canvas-nest.min.js"></script>
+</body>
+</html>

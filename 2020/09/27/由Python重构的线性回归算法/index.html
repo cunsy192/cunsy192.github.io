@@ -1,0 +1,818 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="机器学习,Python,矩阵," />
+
+
+
+
+  
+
+
+  <link rel="alternate" href="/atom.xml" title="村山羊的博客" type="application/atom+xml" />
+
+
+
+
+
+
+<meta name="description" content="本文将简要介绍将matlab中的线性回归算法迁移至Python中，即重构。因为今后的工作将越来越多地借助Python与其十分awesome的库，所以使用Python编程显得尤为重要。本文将包括如下几个部分：1、预备知识2、线性回归算法3、代码实现4、情绪化的个人表达（可以略去）5、参考文献及下载资料">
+<meta property="og:type" content="article">
+<meta property="og:title" content="由Python重构的线性回归算法">
+<meta property="og:url" content="https://cunsy192.github.io/2020/09/27/%E7%94%B1Python%E9%87%8D%E6%9E%84%E7%9A%84%E7%BA%BF%E6%80%A7%E5%9B%9E%E5%BD%92%E7%AE%97%E6%B3%95/index.html">
+<meta property="og:site_name" content="村山羊的博客">
+<meta property="og:description" content="本文将简要介绍将matlab中的线性回归算法迁移至Python中，即重构。因为今后的工作将越来越多地借助Python与其十分awesome的库，所以使用Python编程显得尤为重要。本文将包括如下几个部分：1、预备知识2、线性回归算法3、代码实现4、情绪化的个人表达（可以略去）5、参考文献及下载资料">
+<meta property="og:image" content="https://cunsy192.github.io/images/pasted-52.png">
+<meta property="og:image" content="https://cunsy192.github.io/images/pasted-53.png">
+<meta property="og:image" content="https://cunsy192.github.io/images/pasted-54.png">
+<meta property="article:published_time" content="2020-09-26T18:12:00.000Z">
+<meta property="article:modified_time" content="2020-09-29T16:32:44.434Z">
+<meta property="article:tag" content="机器学习">
+<meta property="article:tag" content="Python">
+<meta property="article:tag" content="矩阵">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://cunsy192.github.io/images/pasted-52.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"always","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://cunsy192.github.io/2020/09/27/由Python重构的线性回归算法/"/>
+
+
+
+
+
+  <title>由Python重构的线性回归算法 | 村山羊的博客</title>
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?c7b7d45a314b528e63ec65f93375707c";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+  
+
+  
+<meta name="generator" content="Hexo 4.2.0"></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">村山羊的博客</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">追随属于你的星星</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://cunsy192.github.io/2020/09/27/%E7%94%B1Python%E9%87%8D%E6%9E%84%E7%9A%84%E7%BA%BF%E6%80%A7%E5%9B%9E%E5%BD%92%E7%AE%97%E6%B3%95/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="村山羊的博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">由Python重构的线性回归算法</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-09-27T02:12:00+08:00">
+                2020-09-27
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%88%91%E4%B8%8EAI/" itemprop="url" rel="index">
+                    <span itemprop="name">我与AI</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2020/09/27/%E7%94%B1Python%E9%87%8D%E6%9E%84%E7%9A%84%E7%BA%BF%E6%80%A7%E5%9B%9E%E5%BD%92%E7%AE%97%E6%B3%95/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2020/09/27/%E7%94%B1Python%E9%87%8D%E6%9E%84%E7%9A%84%E7%BA%BF%E6%80%A7%E5%9B%9E%E5%BD%92%E7%AE%97%E6%B3%95/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>本文将简要介绍将matlab中的线性回归算法迁移至Python中，即重构。因为今后的工作将越来越多地借助Python与其十分awesome的库，所以使用Python编程显得尤为重要。<br>本文将包括如下几个部分：<br>1、预备知识<br>2、线性回归算法<br>3、代码实现<br>4、情绪化的个人表达（可以略去）<br>5、参考文献及下载资料</p>
+<a id="more"></a>
+<p>1、预备知识<br>在进入线性回归的美妙时光之前，你需要掌握以下知识：<br>    Ⅰ.Python基本语法及numpy、matplotlib.pyplot、xlrd库。<br>    Ⅱ.线性代数基础<br>    Ⅲ.高等数学（主要是微分与导数）基础<br>    Ⅳ.熬夜精神与可能不充足但没有办法只能挤出来的时间<br>    Ⅴ.学长的鼓舞（这条选修）<br>2、线性回归算法<br>在该部分，我们将回顾主要的线性回归运算，但由于之前的博文已经写过，故略去。<br>3、代码实现<br>由于大部分与matlab中的程序相同，故主要选择不同之处与没有提及的地方讲解，关于之前的回归算法我在博文中有较为详细的说明，欢迎阅读。<br>    Ⅰ.导入数据<br>    导入数据需要用到xlrd库[1]，本文中不赘述（悄悄说句，matlab导入数据比Python好像更方便耶）<br>    Ⅱ.矩阵化<br>    由于matlab导入数据时可以选择矩阵，而Python莫得此功能，故我们需要苦逼地在本该是美好夜晚的时候让输入数据矩阵化（如果不这么做将导致后续处理数据时按列表处理，会产生求矩阵秩与乘法的问题，注意注意）。代码如下<br>    <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#矩阵化初始数据，须提前导入numpy库（这有时可用np.array代替，具体我没找到原因，留作思考题）</span></span><br><span class="line">np.matrix(x)</span><br></pre></td></tr></table></figure><br>    Ⅲ.转置矩阵<br>    这在matlab中十分方便，但是在这里，我们需要这个函数。<br>    <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#转置括号里那个可怜弱小又无助的矩阵QAQ</span></span><br><span class="line">np.transpose(x)</span><br></pre></td></tr></table></figure><br>    Ⅳ.求行列值、增扩矩阵、矩阵置零<br>    这几个功能在matlab中很好实现，但Python确实要费点脑子，主要是这几个函数。<br>    <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#进行求矩阵行列值的操作</span></span><br><span class="line">x.shape</span><br><span class="line"><span class="comment">#进行求矩阵行值或列值的操作（n取0为行值，n取1为列值）</span></span><br><span class="line">x.shape[n]</span><br><span class="line"><span class="comment">#生成零矩阵的函数[2]</span></span><br><span class="line">np.zero()</span><br><span class="line"><span class="comment">#矩阵增扩函数，y在左边则左增扩，右边则右增扩</span></span><br><span class="line">x = np.c_[x,y]</span><br></pre></td></tr></table></figure><br>    Ⅵ.矩阵运算<br>    还是matlab方便，但是我选择了Python，就要负责到底！加法和矩阵乘法和matlab类似，使用x*y或np.dot(x,y)函数，但我实在不明白为啥点乘就表示不出来，后来发现是要用这个函数[3]<br>    <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">np.multiply(a1, x1[:,i])</span><br></pre></td></tr></table></figure><br>    Ⅶ.作图<br>    你终于来到了这一步，但是摆在你眼前的是作图，没有关系，我们plt库可以当此重任！眼下的这几个函数与matlab中的这几个函数是等价的。<br>    <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#等价于scatter(x,y)</span></span><br><span class="line">plt.scatter(x,y)</span><br><span class="line"><span class="comment">#等价于plot(x,y)</span></span><br><span class="line">plt.plot(x,y)</span><br><span class="line"><span class="comment">#等价于hold on加上display</span></span><br><span class="line">plt.show()</span><br></pre></td></tr></table></figure><br>    Ⅷ.其他<br>    这可太棒了，我们解决了所有问题，但是等等，有一个注意点需要我们考虑。<br>    这个注意点在这里比较坑，我调了半天，从头开始才调出来，那就是减肥时，如果有两个列向量（列数一致），一个为矩阵，另一个为列表，则相减将得到意想不到的结果[4]，这就是之前所说的按列表处理的危害性。对了，来看看Python作的图！</p>
+<p><img src="/images/pasted-52.png" alt="upload successful"></p>
+<pre><code>散点图（初始数据集）</code></pre><p><img src="/images/pasted-53.png" alt="upload successful"></p>
+<pre><code>迭代100次的收敛图像</code></pre><p><img src="/images/pasted-54.png" alt="upload successful"></p>
+<pre><code>迭代轨迹图（从下往上，每条线代表每一次迭代产生的回归直线）</code></pre><p>4、情绪化的个人表达<br>其实像做这篇博文很久了，但因为懒和各种事情拖到现在，重构也是我花了3小时学了Python得出的结果（其实不能说学了，因为很多东西是现查的，而且有些东西需要摸索，网络上没有）。今天的重构是新的开始，之后的各类模型（除了数学建模）我都会使用Python写。人生苦短，我用Python！我今晚想起学长说的要猛学的话，决定要重新开始，不能再颓废了，于是我决定今晚一定要把重构代码搞出来，而且我做到了！有志者，事竟成！我决定在一周内发布逻辑回归的博客！<br>5、参考资料及下载文件<br>    ①参考资料<br>    [1]<a href="https://zhuanlan.zhihu.com/p/92678052" target="_blank" rel="noopener">https://zhuanlan.zhihu.com/p/92678052</a><br>    [2]<a href="https://blog.csdn.net/cpc784221489/article/details/82885590" target="_blank" rel="noopener">https://blog.csdn.net/cpc784221489/article/details/82885590</a><br>    [3]<a href="https://blog.csdn.net/Cherry_Blossom_/article/details/79259804?utm_medium=distribute.pc_relevant.none-task-blog-BlogCommendFromMachineLearnPai2-1.channel_param&amp;depth_1-utm_source=distribute.pc_relevant.none-task-blog-BlogCommendFromMachineLearnPai2-1.channel_param" target="_blank" rel="noopener">https://blog.csdn.net/Cherry_Blossom_/article/details/79259804?utm_medium=distribute.pc_relevant.none-task-blog-BlogCommendFromMachineLearnPai2-1.channel_param&amp;depth_1-utm_source=distribute.pc_relevant.none-task-blog-BlogCommendFromMachineLearnPai2-1.channel_param</a><br>    [4]<a href="https://blog.csdn.net/dake13/article/details/80917932" target="_blank" rel="noopener">https://blog.csdn.net/dake13/article/details/80917932</a><br>    ②下载资料<br>    <a href="/download/LR.py" ">基于Python实现的线性回归</a><br>    <a href="/download/test.xlsx" ">Kaggle数据集（二元）</a></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/" rel="tag"># 机器学习</a>
+          
+            <a href="/tags/Python/" rel="tag"># Python</a>
+          
+            <a href="/tags/%E7%9F%A9%E9%98%B5/" rel="tag"># 矩阵</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2020/09/23/%E5%9F%BA%E4%BA%8EC%E8%AF%AD%E8%A8%80%E5%8D%95%E5%90%91%E5%BE%AA%E7%8E%AF%E9%93%BE%E8%A1%A8%E7%9A%84%E5%9B%BE%E4%B9%A6%E7%AE%A1%E7%90%86%E7%B3%BB%E7%BB%9F/" rel="next" title="基于C语言单向循环链表的图书管理系统">
+                <i class="fa fa-chevron-left"></i> 基于C语言单向循环链表的图书管理系统
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2020/09/29/%E4%B8%80%E7%A7%8D%E7%AE%80%E5%8D%95%E7%9A%84%E4%BA%8C%E5%88%86%E7%B1%BB%E6%A8%A1%E5%9E%8B/" rel="prev" title="一种简单的二分类模型">
+                一种简单的二分类模型 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div class="comments" id="comments">
+    </div>
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+
+      <section class="site-overview-wrap sidebar-panel sidebar-panel-active">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/avatar.gif"
+                alt="" />
+            
+              <p class="site-author-name" itemprop="name"></p>
+              <p class="site-description motion-element" itemprop="description">诸君，我还是想学NLP</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/%7C%7C%20archive">
+              
+                  <span class="site-state-item-count">29</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">13</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">12</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder"></span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Pisces</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+  <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+  <script src="//unpkg.com/valine/dist/Valine.min.js"></script>
+  
+  <script type="text/javascript">
+    var GUEST = ['nick','mail','link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item=>{
+      return GUEST.indexOf(item)>-1;
+    });
+    new Valine({
+        el: '#comments' ,
+        verify: false,
+        notify: false,
+        appId: 'tTKVD3voefpRYJhQOxDxxtNi-gzGzoHsz',
+        appKey: 'GdkqB8WSAwEVy1DJKQWeGEMT',
+        placeholder: 'Just go go',
+        avatar:'mm',
+        guest_info:guest,
+        pageSize:'10' || 10,
+    });
+  </script>
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  
+
+
+  
+
+  
+
+  <script type="text/javascript" src="//cdn.bootcss.com/canvas-nest.js/1.0.0/canvas-nest.min.js"></script>
+</body>
+</html>
